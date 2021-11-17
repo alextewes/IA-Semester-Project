@@ -1,7 +1,4 @@
-# *Integration Architectures* MEAN-Template
-
-This template is meant to support students getting started with the Integration Architectures project.
-
+# *Integration Architectures* Semester Project
 ## Prerequisites
  1. You need a **Node.js** runtime. It is available at: https://nodejs.org/ .
     
