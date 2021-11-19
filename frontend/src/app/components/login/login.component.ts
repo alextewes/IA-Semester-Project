@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from "../../services/auth.service";
-import {Credentials} from "../../models/Credentials";
-import {Router} from "@angular/router";
+import {AuthService} from '../../services/auth.service';
+import {Credentials} from '../../models/Credentials';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent implements OnInit {
 
-  //object for input-binding
+  // object for input-binding
   credentials: Credentials;
 
   loginError: string;
@@ -24,16 +24,16 @@ export class LoginComponent implements OnInit {
   /**
    * handles login operation, by calling the authService
    */
-  performLogin(){
+  performLogin(): void{
     this.authService.login(this.credentials).subscribe(response => {
-        if(response.status === 200){ //if response status is 200, assume login was successful
+        if (response.status === 200){ // if response status is 200, assume login was successful
           this.resetCredentials();
           this.enterApplication();
         }else{
           this.loginError = response.body;
         }
       },
-      error=>{
+      error => {
         this.loginError = error.error;
       }
     );
@@ -42,14 +42,14 @@ export class LoginComponent implements OnInit {
   /**
    * resets login form
    */
-  resetCredentials(){
+  resetCredentials(): void{
     this.credentials = new Credentials('', '');
   }
 
   /**
    * redirects to the landing page
    */
-  enterApplication(){
+  enterApplication(): void{
     this.router.navigate(['']);
   }
 }
