@@ -4,6 +4,8 @@
 
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
+
 
 const multer = require('multer');
 const upload = multer();
@@ -42,6 +44,7 @@ let credentials = '';
 if(username){
     credentials = username+':'+password+'@';
 }
+mongoose.connect('mongodb://' + credentials + domain + ':' + port + '/' + databaseName);
 
 MongoClient.connect('mongodb://' + credentials + domain + ':' + port + '/').then(async dbo =>{ //connect to MongoDb
 
