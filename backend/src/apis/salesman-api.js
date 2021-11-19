@@ -48,7 +48,7 @@ exports.findAll = async function(req, res) {
 
 exports.update = async function(req, res) {
     try {
-        const salesman = Salesman.findOneAndUpdate({sid: req.params.sid}, {
+        const salesman = await Salesman.findOneAndUpdate({sid: req.params.sid}, {
             sid: req.body.sid,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -56,6 +56,23 @@ exports.update = async function(req, res) {
             experience: req.body.experience
         }, {new: true});
         res.send(salesman);
+    }
+    catch (err) {
+        return res.status(500).send({
+            message: err
+        });
+    }
+};
+
+exports.delete = async function(req, res) {
+    try {
+        const salesman = await Salesman.findOneAndDelete({prid: req.params.prid});
+        if(!salesman) {
+            return res.status(404).send({
+                message: "Salesman not found with sid: " + req.params.prid
+            });
+        }
+        res.send({message: "Salesman deleted!"});
     }
     catch (err) {
         return res.status(500).send({
