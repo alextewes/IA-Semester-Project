@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const PerformanceRecordSchema = mongoose.Schema({
-    erid: Number,
+    prid: Number,
     actualValue: Number,
     targetValue: Number,
     year: Number,
