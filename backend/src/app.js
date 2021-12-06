@@ -68,3 +68,6 @@ async function initDb(db){
         console.log('created admin user with password: '+adminPassword);
     }
 }
+
+// const o = require('./services/orange-hrm-service');
+// o.getAllEmployees();

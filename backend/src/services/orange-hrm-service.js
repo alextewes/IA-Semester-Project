@@ -27,27 +27,33 @@ getOrangeHrmToken = async () => {
     return accessToken;
 }
 
-getAllEmployees = async () => {
-    let token = await getOrangeHrmToken()
-    let config = {
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Accept': 'application/json'
+exports.getAllEmployees = async () => {
+    try {
+        let token = await getOrangeHrmToken()
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Accept': 'application/json'
+            }
+        };
+        const accounts = await axios.get('https://sepp-hrm.inf.h-brs.de/symfony/web/index.php/api/v1/employee/search', config);
+        const unfilteredAccounts = accounts.data.data;
+        console.log(unfilteredAccounts);
+        let employees = [];
+        for(let e of unfilteredAccounts) {
+            const sid = e.code;
+            const firstName = e.firstName;
+            const lastName = e.lastName;
+            const dob = e.dob;
+            const department = e.unit;
+            let employee = new Salesman({sid: sid, firstName: firstName,lastName :lastName, dob: dob, department:department});
+            await employee.save();
+            employees.push(employee);
         }
-    };
-    const accounts = await axios.get('https://sepp-hrm.inf.h-brs.de/symfony/web/index.php/api/v1/employee/search', config);
-    const unclearedAccounts = accounts.data.data;
-    let employees = []
-    for(let e of unclearedAccounts){
-        const firstName = e.firstName;
-        const lastName = e.lastName;
-        const dob = e.dob;
-        const department = e.unit;
-        let employee = new Salesman({firstName: firstName,lastName :lastName, dob:dob, department:department});
-        await employee.save();
-        employees.push(employee);
+        return employees;
     }
-    console.log(employees)
-    return employees;
+    catch(e) {
+        console.log(e);
+    }
+
 }
-getAllEmployees()
