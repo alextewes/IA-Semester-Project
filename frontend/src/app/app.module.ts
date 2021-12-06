@@ -18,6 +18,7 @@ import { MenuBarComponent } from './components/menu-bar/menu-bar.component';
 import { ExamplePageComponent } from './pages/example-page/example-page.component';
 import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.component';
 import { FooterBarComponent } from './components/footer-bar/footer-bar.component';
+import { BonusComputationPageComponent } from './pages/bonus-computation-page/bonus-computation-page.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { FooterBarComponent } from './components/footer-bar/footer-bar.component
     MenuBarComponent,
     ExamplePageComponent,
     NotFoundPageComponent,
-    FooterBarComponent
+    FooterBarComponent,
+    BonusComputationPageComponent
   ],
   imports: [
     BrowserModule,
