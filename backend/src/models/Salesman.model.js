@@ -5,8 +5,7 @@ const SalesmanSchema = mongoose.Schema({
     firstName: String,
     lastName: String,
     dob: String,
-    experience: String
-
+    department: String
 });
 
 module.exports = mongoose.model('Salesman', SalesmanSchema);
