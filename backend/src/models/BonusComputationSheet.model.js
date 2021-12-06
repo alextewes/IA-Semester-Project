@@ -6,7 +6,7 @@ const BonusComputationSheetSchema = mongoose.Schema({
     bcid: Number,
     sid: Number,
     salesorders: [Salesorder],
-    performanceRecord: PerformanceRecord
+    performanceRecord: [PerformanceRecord]
 });
 
 module.exports = mongoose.model('BonusComputationSheet', BonusComputationSheetSchema);
