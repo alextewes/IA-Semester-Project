@@ -10,6 +10,8 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./bonus-computation-page.component.css']
 })
 export class BonusComputationPageComponent implements OnInit {
+
+  constructor() { }
   years = 2030;
   baseColumnDefs: ColDef[] = [
     { field: 'sid', headerName: 'SID', sortable: true, flex: 1 },
@@ -52,25 +54,35 @@ export class BonusComputationPageComponent implements OnInit {
     {category: 'Integrity to Company', targetValue: 4, actualValue: 3, bonus: 20}
   ];
   myControl = new FormControl();
-  options: string[] = ['John Smith', 'Bruce Wane', 'Miles Morales'];
+  options: string[];
+
   filteredOptions: Observable<string[]>;
+  bonuses = {
+    totalBonusAB: 10,
+    totalBonusA: 10,
+    totalBonusB: 10
+  };
 
-  @Input() totalBonusAB: number;
-  @Output() totalBonusABChange = new EventEmitter<number>();
+  /*@Input() totalBonusAB: number;
+  @Output() totalBonusABChange = new EventEmitter<number>();*/
 
-  method(): void{
-    let totalBonusB = 0;
+  method(event): void{
     this.ordersRowData.forEach(element => {
-      totalBonusB = +  element;
+      this.bonuses.totalBonusA = +  element.bonus;
     });
+    this.socialPerformanceRowData.forEach(element => {
+      this.bonuses.totalBonusB = +  element.bonus;
+    });
+    this.bonuses.totalBonusAB = this.bonuses.totalBonusA + this.bonuses.totalBonusB;
   }
-  constructor() { }
 
   ngOnInit(): void {
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => this._filter(value)),
     );
+    this.baseRowData.forEach((element) => {this.options.push(element.firstName + '' + element.lastName ); });
+    // this.method("");
   }
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();

@@ -2,24 +2,81 @@
 
   <div
     style="display:flex; flex-direction: column; width:50%; height:1000px; justify-content: center; align-items:center">
-
-    <ag-grid-angular style="width: 60%; height:100%;" class="ag-theme-alpine" [rowData]="baseRowData "
+    <form class="example-form">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Salesman</mat-label>
+        <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field appearance="fill" >
+        <mat-label>Year of performance</mat-label>
+        <input matInput type="number" placeholder="2021" [formControl]="myControl" value="2021">
+        <mat-error *ngIf="years < 1950">1950</mat-error>
+      </mat-form-field>
+    </form>
+    <ag-grid-angular style="width: 60%; height:50%;" class="ag-theme-alpine" [rowData]="baseRowData "
                      [columnDefs]="baseColumnDefs">
     </ag-grid-angular>
   </div>
   <div
     style="display:flex; flex-direction: column; width:50%; height:1000px; justify-content: center; align-items:center">
-    <div style="width:100%; height:50%">
-      <ag-grid-angular style="width: 60%; height:100%;" class="ag-theme-alpine" [rowData]="ordersRowData"
-                       [columnDefs]="ordersColumnDefs">
-      </ag-grid-angular>
+    <div [ngClass]="'custom-table-container'">
+      <table [ngClass]="'custom-table'">
+        <tr>
+          <th>Name:</th>
+          <td>John Smith</td>
+        </tr>
+        <tr>
+          <th>Employeed ID:</th>
+          <td>90123</td>
+        </tr>
+        <tr>
+          <th>Department:</th>
+          <td>Sales</td>
+        </tr>
+        <tr>
+          <th>Year of Performance</th>
+          <td>2018</td>
+        </tr>
+      </table>
     </div>
-    <div style="width:100%; height:50%">
-      <ag-grid-angular style="width: 60%; height:80%;" class="ag-theme-alpine"
-                       [rowData]="socialPerformanceRowData" [columnDefs]="socialPerformanceColumnDefs">
+    <div style="width:100%; height:50%; border:1px solid black; padding:10px; margin: 10px;">
+      <p>A.) Orders Evaluation</p>
+      <ag-grid-angular style="width: 75%; height:85%;" class="ag-theme-alpine" [rowData]="ordersRowData"
+                       [columnDefs]="ordersColumnDefs" (cellValueChanged)="method($event)">
       </ag-grid-angular>
+      <table style="display:flex; flex-direction: row;justify-content: right">
+        <tr>
+          <th>Total Bonus for part A):</th>
+          <td>{{ bonuses.totalBonusA }}</td>
+        </tr>
+      </table>
     </div>
-    <div style="display:flex; flex-direction: column; width:100% ">
+    <div style="width:100%; height:50%; border:1px solid black;padding:10px;margin: 10px;">
+      <p>B.) Social Performance Evaluation</p>
+      <ag-grid-angular style="width: 75%; height:85%;" class="ag-theme-alpine"
+                       [rowData]="socialPerformanceRowData" [columnDefs]="socialPerformanceColumnDefs" (cellValueChanged)="method($event)">
+      </ag-grid-angular>
+      <table style="display:flex; flex-direction: row;justify-content: right">
+        <tr>
+          <th>Total Bonus for part B):</th>
+          <td>{{ bonuses.totalBonusB }}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="display:flex; flex-direction: row; border:1px solid black; justify-content: right">
+      <table>
+        <tr>
+          <th>Total Bonus (part A & B):</th>
+          <td>{{ bonuses.totalBonusAB }}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="display:flex; flex-direction: column; width:100%">
       <div>
         <mat-label>Remarks</mat-label>
       </div>
@@ -29,7 +86,9 @@
           <textarea matInput placeholder="Ex. Improve on everything..."></textarea>
         </mat-form-field>
       </div>
-
+      <div>
+        <button mat-button>Export</button>
+      </div>
     </div>
   </div>
 </section>
