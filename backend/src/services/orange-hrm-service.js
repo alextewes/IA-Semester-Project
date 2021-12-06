@@ -43,7 +43,8 @@ getAllEmployees = async () => {
         const lastName = e.lastName;
         const dob = e.dob;
         const department = e.unit;
-        let employee = new Salesman({undefined,firstName,lastName, dob, department});
+        let employee = new Salesman({firstName: firstName,lastName :lastName, dob:dob, department:department});
+        await employee.save();
         employees.push(employee);
     }
     console.log(employees)
