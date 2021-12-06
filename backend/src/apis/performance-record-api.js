@@ -12,7 +12,6 @@ exports.create = async function(req, res) {
             goalDesc: req.body.goalDesc,
             sid: req.body.sid
         });
-
         // save performanceRecord in database
         const data = await performanceRecord.save();
         res.send(data);
@@ -33,7 +32,7 @@ exports.findBySid = async function(req, res) {
         res.send(performanceRecord);
     }
     catch(err) {
-        return res.status(400).send({message: err.message});
+        res.status(400).send({message: err.message});
     }
 }
 
@@ -60,7 +59,7 @@ exports.update = async function(req, res) {
         res.send(performanceRecord);
     }
     catch (err) {
-        return res.status(500).send({
+        res.status(500).send({
             message: err
         });
     }
@@ -70,14 +69,14 @@ exports.delete = async function(req, res) {
     try {
         const performanceRecord = await PerformanceRecord.findOneAndDelete({prid: req.params.prid});
         if(!performanceRecord) {
-            return res.status(404).send({
+            res.status(404).send({
                 message: "Performance Record not found with prid: " + req.params.prid
             });
         }
         res.send({message: "performanceRecord deleted!"});
     }
     catch (err) {
-        return res.status(500).send({
+        res.status(500).send({
             message: err
         });
     }

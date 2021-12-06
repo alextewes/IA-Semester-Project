@@ -11,7 +11,6 @@ exports.create = async function(req, res) {
             dob: req.body.dob,
             experience: req.body.experience
         });
-
         // save salesman in database
         const data = await salesman.save();
         res.send(data);
