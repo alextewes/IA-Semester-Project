@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {LoginPageComponent} from "./pages/login-page/login-page.component";
-import {LandingPageComponent} from "./pages/landing-page/landing-page.component";
-import {AuthGuardService} from "./services/auth-guard.service";
-import {ExamplePageComponent} from "./pages/example-page/example-page.component";
-import {NotFoundPageComponent} from "./pages/not-found-page/not-found-page.component";
-import {BonusComputationPageComponent} from "./pages/bonus-computation-page/bonus-computation-page.component";
-import {PerformanceRecordsPageComponent} from "./pages/performance-records-page/performance-records-page.component";
-import {SalesmenPageComponent} from "./pages/salesmen-page/salesmen-page.component";
+import {LoginPageComponent} from './pages/login-page/login-page.component';
+import {LandingPageComponent} from './pages/landing-page/landing-page.component';
+import {AuthGuardService} from './services/auth-guard.service';
+import {ExamplePageComponent} from './pages/example-page/example-page.component';
+import {NotFoundPageComponent} from './pages/not-found-page/not-found-page.component';
+import {BonusComputationPageComponent} from './pages/bonus-computation-page/bonus-computation-page.component';
+import {PerformanceRecordsPageComponent} from './pages/performance-records-page/performance-records-page.component';
+import {SalesmenPageComponent} from './pages/salesmen-page/salesmen-page.component';
 
 /*
   This array holds the relation of paths and components which angular router should resolve.
