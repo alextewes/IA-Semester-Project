@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const SalesmanSchema = mongoose.Schema({
-    sid: Number,
+    _id: Number,
     firstName: String,
     lastName: String,
     dob: String,
