@@ -36,7 +36,7 @@ export class MenuBarComponent implements OnInit {
   /**
    * function which handles clicking the logout button
    */
-  handleLogout(){
+  handleLogout(): void{
     this.authService.logout().subscribe();
     this.router.navigate(['login']); // after logout go back to the login-page
   }
@@ -44,7 +44,7 @@ export class MenuBarComponent implements OnInit {
   /**
    * fetches information about logged-in user
    */
-  fetchUser(){
+  fetchUser(): void{
     this.userService.getOwnUser().subscribe(user => {
       this.user = user;
     });
