@@ -2,11 +2,13 @@ const mongoose = require('mongoose');
 
 const SalesorderSchema = mongoose.Schema({
     id: Number,
-    customerName: String,
+    sid: Number,
     year: Number,
-    clientRanking: Number,
     product: String,
-    items: Number
+    customerName: String,
+    clientRanking: Number,
+    items: Number,
+    bonus: Number
 });
 
 module.exports = mongoose.model('Salesorder', SalesorderSchema);
