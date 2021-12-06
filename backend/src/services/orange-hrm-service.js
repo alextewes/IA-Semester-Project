@@ -38,19 +38,23 @@ exports.getAllEmployees = async () => {
         };
         const accounts = await axios.get('https://sepp-hrm.inf.h-brs.de/symfony/web/index.php/api/v1/employee/search', config);
         const unfilteredAccounts = accounts.data.data;
-        console.log(unfilteredAccounts);
-        let employees = [];
         for(let e of unfilteredAccounts) {
-            const sid = e.code;
-            const firstName = e.firstName;
-            const lastName = e.lastName;
-            const dob = e.dob;
-            const department = e.unit;
-            let employee = new Salesman({sid: sid, firstName: firstName,lastName :lastName, dob: dob, department:department});
-            await employee.save();
-            employees.push(employee);
+            if(e.unit === "Sales") {
+                const sid = e.code;
+                const firstName = e.firstName;
+                const lastName = e.lastName;
+                const dob = e.dob;
+                const department = e.unit;
+                const query = {_id: sid, firstName: firstName,lastName :lastName, dob: dob, department:department};
+                if(await Salesman.exists({_id: sid})) {
+                    await Salesman.findByIdAndUpdate(sid);
+                }
+                else {
+                    await new Salesman(query).save();
+                }
+            }
+
         }
-        return employees;
     }
     catch(e) {
         console.log(e);
