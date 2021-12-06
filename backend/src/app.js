@@ -5,6 +5,7 @@
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const orangeHrmService = require('./services/orange-hrm-service');
 
 
 const multer = require('multer');
@@ -69,5 +70,5 @@ async function initDb(db){
     }
 }
 
-// const o = require('./services/orange-hrm-service');
-// o.getAllEmployees();
+
+orangeHrmService.getAllEmployees().then(r => console.log("Salesmen updated!" + r)).catch(err => console.log(err));
