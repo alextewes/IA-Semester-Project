@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const SalesmanSchema = mongoose.Schema({
+const SalesmanSchema = new mongoose.Schema({
     _id: Number,
+    employeeId: Number,
     firstName: String,
     lastName: String,
     dob: String,
-    experience: String,
     department: String
 });
 
