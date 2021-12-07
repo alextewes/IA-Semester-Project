@@ -1,15 +1,16 @@
 const Salesman = require('../models/Salesman.model.js')
 
-
 exports.create = async function(req, res) {
     try {
         // create salesman
+        const id = new Date().valueOf();
         const salesman = new Salesman({
-            sid: req.body.sid,
+            _id: id,
+            employeeId: req.body.employeeId,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             dob: req.body.dob,
-            experience: req.body.experience
+            department: req.body.department
         });
         // save salesman in database
         const data = await salesman.save();
@@ -22,9 +23,9 @@ exports.create = async function(req, res) {
     }
 };
 
-exports.findBySid = async function(req, res) {
+exports.findById = async function(req, res) {
     try {
-        const salesman = await Salesman.findOne({sid: req.params.sid});
+        const salesman = await Salesman.findById(req.params.id);
         if(!salesman) {
             return res.status(404).send({message: "Salesman not found!"});
         }
@@ -47,12 +48,11 @@ exports.findAll = async function(req, res) {
 
 exports.update = async function(req, res) {
     try {
-        const salesman = await Salesman.findOneAndUpdate({sid: req.params.sid}, {
-            sid: req.body.sid,
+        const salesman = await Salesman.findByIdAndUpdate(req.params.id, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             dob: req.body.dob,
-            experience: req.body.experience
+            department: req.body.department
         }, {new: true});
         res.send(salesman);
     }
@@ -65,10 +65,10 @@ exports.update = async function(req, res) {
 
 exports.delete = async function(req, res) {
     try {
-        const salesman = await Salesman.findOneAndDelete({prid: req.params.prid});
+        const salesman = await Salesman.findByIdAndDelete(req.params.id);
         if(!salesman) {
             return res.status(404).send({
-                message: "Salesman not found with sid: " + req.params.prid
+                message: "Salesman not found with ID: " + req.params.id
             });
         }
         res.send({message: "Salesman deleted!"});
