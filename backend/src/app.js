@@ -70,5 +70,4 @@ async function initDb(db){
     }
 }
 
-
-orangeHrmService.getAllEmployees().then(r => console.log("Salesmen updated!" + r)).catch(err => console.log(err));
+orangeHrmService.getAllEmployees().then(r => console.log("Salesmen updated!")).catch(err => console.log(err));

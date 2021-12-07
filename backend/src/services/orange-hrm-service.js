@@ -8,8 +8,8 @@ const body = qs.stringify({
     client_id: 'api_oauth_id',
     client_secret: 'oauth_secret',
     grant_type: 'password',
-    username: 'demouser',
-    password: '*Safb02da42Demo$'
+    username: 'Tewes',
+    password: 'UptG8qc-PlKRTqNt3j6_xcewbyUE9pYMx6GK'
 });
 const config = {
     headers: {
@@ -29,7 +29,7 @@ getOrangeHrmToken = async () => {
 
 exports.getAllEmployees = async () => {
     try {
-        let token = await getOrangeHrmToken()
+        let token = await getOrangeHrmToken();
         let config = {
             headers: {
                 'Authorization': 'Bearer ' + token,
