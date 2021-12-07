@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const PerformanceRecordSchema = mongoose.Schema({
+const PerformanceRecordSchema = new mongoose.Schema({
     prid: Number,
     actualValue: Number,
     targetValue: Number,
