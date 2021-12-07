@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
-const Salesorder = require('Salesorder.model');
-const PerformanceRecord = require('PerformanceRecord.model');
 
-const BonusComputationSchema = mongoose.Schema({
-    bcid: Number,
+const BonusComputationSchema = new mongoose.Schema({
+    bcid: {type: Number, index: true},
     sid: Number,
-    salesorders: [Salesorder],
-    performanceRecord: [PerformanceRecord]
+    year: Number,
+    value: Number
 });
 
 module.exports = mongoose.model('BonusComputation', BonusComputationSchema);
