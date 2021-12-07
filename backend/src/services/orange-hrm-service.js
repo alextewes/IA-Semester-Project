@@ -18,7 +18,7 @@ const config = {
     }
 };
 
-getOrangeHrmToken = async () => {
+const getOrangeHrmToken = async function() {
     const res = await axios.post(`${baseUrl}/oauth/issueToken`, body, config);
     if (res.data.error) {
         throw Error(res.data.error);
@@ -27,7 +27,7 @@ getOrangeHrmToken = async () => {
     return accessToken;
 }
 
-exports.getAllEmployees = async () => {
+const getAllEmployees = async function() {
     try {
         let token = await getOrangeHrmToken();
         let config = {
@@ -60,4 +60,9 @@ exports.getAllEmployees = async () => {
         console.log(e);
     }
 
+}
+
+module.exports = {
+    getOrangeHrmToken,
+    getAllEmployees
 }
