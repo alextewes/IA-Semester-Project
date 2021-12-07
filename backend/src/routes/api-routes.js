@@ -16,7 +16,7 @@ router.get('/user', checkAuthorization(), userApi.getSelf);
 
 const salesmanApi = require('../apis/salesman-api');
 router.post('/salesman', salesmanApi.create);
-router.get('/salesman/:sid', salesmanApi.findBySid);
+router.get('/salesman/:sid', salesmanApi.findById);
 router.get('/salesman', salesmanApi.findAll);
 router.put('/salesman/:sid', salesmanApi.update);
 router.delete('/salesman/:sid', salesmanApi.delete);
@@ -28,5 +28,7 @@ router.get('/performance-record', performanceRecordApi.findAll);
 router.put('/performance-record/:prid', performanceRecordApi.update);
 router.delete('/performance-record/:prid', performanceRecordApi.delete);
 
+const bonusComputationApi = require('../apis/bonus-computation-api');
+router.post('/bonus-computation', bonusComputationApi.create);
 
 module.exports = router;
