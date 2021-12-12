@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const SalesorderSchema = new mongoose.Schema({
-    id: Number,
     sid: Number,
     year: Number,
     product: String,
