@@ -5,14 +5,13 @@ const orangeHrmService = require('../services/orange-hrm-service');
 exports.create = async function(req, res) {
     try {
         // create bonusComputation
-        const bcid = new Date().valueOf();
         const bonusComputation = new BonusComputation({
-            bcid: bcid,
             sid: req.body.sid,
             year: req.body.year,
             value: req.body.value,
-            salesorders: req.body.salesorders,
-            performanceRecords: req.body.performanceRecords
+            performanceRecords: req.body.performanceRecords,
+            salesOrders: req.body.salesOrders
+
         });
         // save bonusComputation in database
         const data = await bonusComputation.save();

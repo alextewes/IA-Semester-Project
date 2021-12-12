@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 const BonusComputationSchema = new mongoose.Schema({
-    bcid: {type: Number, index: true},
     sid: Number,
     year: Number,
-    value: Number
+    value: Number,
+    performanceRecords: [{type: mongoose.Types.ObjectId, ref:"PerformanceRecord"}],
+    salesOrders: [{type: mongoose.Types.ObjectId, ref:"SalesOrder"}]
 });
 
 module.exports = mongoose.model('BonusComputation', BonusComputationSchema);
