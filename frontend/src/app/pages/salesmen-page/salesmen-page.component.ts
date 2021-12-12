@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {SalesmanService} from '../../services/salesman.service';
+import {Salesman} from '../../models/Salesman.model';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-salesmen-page',
@@ -6,10 +9,29 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./salesmen-page.component.css']
 })
 export class SalesmenPageComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+  public salesmen: Salesman[];
+  public salesman: Salesman;
+  @Input() id: string;
+  constructor(private salesmanService: SalesmanService) {
   }
+
+  getSalesmen(): void {
+    this.salesmanService.getSalesmen()
+      .subscribe((data: Salesman[]) => this.salesmen = data,
+        (error: HttpErrorResponse) => {
+        console.log(error.message);
+        });
+  }
+  getSalesman(id: string): void {
+    this.salesmanService.getSalesman(id)
+      .subscribe((data: Salesman) => this.salesman = data,
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        });
+  }
+  ngOnInit(): void {
+    this.getSalesmen();
+  }
+
 
 }

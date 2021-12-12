@@ -24,6 +24,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { PerformanceRecordsPageComponent } from './pages/performance-records-page/performance-records-page.component';
 import { SalesmenPageComponent } from './pages/salesmen-page/salesmen-page.component';
+import {SalesmanService} from './services/salesman.service';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,7 @@ import { SalesmenPageComponent } from './pages/salesmen-page/salesmen-page.compo
     MatAutocompleteModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [SalesmanService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,1 +1,23 @@
 <p>performance-records-page works!</p>
+<ng-container style="display:flex; flex-direction: row">
+  <table>
+    <tr>
+      <th>Prid</th>
+      <th>Actual Value</th>
+      <th>Target Value</th>
+      <th>Year</th>
+      <th>Goal description</th>
+      <th>Sid</th>
+    </tr>
+    <ng-container *ngFor="let performanceRecord of performanceRecords">
+      <tr>
+        <td>{{performanceRecord.prid}}</td>
+        <td>{{performanceRecord.actualValue}}</td>
+        <td>{{performanceRecord.targetValue}}</td>
+        <td>{{performanceRecord.year}}</td>
+        <td>{{performanceRecord.goalDesc}}</td>
+        <td>{{performanceRecord.sid}}</td>
+      </tr>
+    </ng-container>
+  </table>
+</ng-container>

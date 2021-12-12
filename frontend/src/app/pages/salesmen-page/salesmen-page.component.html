@@ -1,1 +1,34 @@
 <p>salesmen-page works!</p>
+<button (click)="getSalesman(id)">Load salesman</button>
+<input type="text" [id]="id">
+<ng-container style="display:flex; flex-direction: row">
+  <table>
+    <tr>
+      <th>EmployeeId:</th>
+      <th>First Name:</th>
+      <th>Last Name:</th>
+      <th>Date of birth</th>
+      <th>Department</th>
+    </tr>
+    <ng-container *ngFor="let salesman of salesmen">
+      <tr>
+        <td>{{salesman._id}}</td>
+        <td>{{salesman.firstName}}</td>
+        <td>{{salesman.lastName}}</td>
+        <td>{{salesman.department}}</td>
+        <td>{{salesman.dob}}</td>
+      </tr>
+    </ng-container>
+  </table>
+  <table>
+    <ng-container *ngIf="salesman">
+      <tr><th>EmployeeId:</th><td>{{salesman._id}}</td></tr>
+      <tr><th>First Name:</th><td>{{salesman.firstName}}</td></tr>
+      <tr><th>Last Name:</th><td>{{salesman.lastName}}</td></tr>
+      <tr><th>Date of birth</th><td>{{salesman.dob}}</td>></tr>
+      <tr><th>Department</th><td>{{salesman.department}}</td></tr>
+    </ng-container>
+
+  </table>
+</ng-container>
+
