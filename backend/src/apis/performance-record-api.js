@@ -5,7 +5,6 @@ exports.create = async function(req, res) {
     try {
         // create performanceRecord
         const performanceRecord = new PerformanceRecord({
-            prid: req.body.prid,
             actualValue: req.body.actualValue,
             targetValue: req.body.targetValue,
             year: req.body.year,
