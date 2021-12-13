@@ -26,3 +26,16 @@ exports.create = async function(req, res) {
         })
     }
 };
+
+exports.findBySidAndYear = async function(req, res) {
+    try {
+        const bonusComputation = await BonusComputation.find({sid: req.params.sid, year: req.params.year});
+        if(!bonusComputation) {
+            return res.status(404).send({message: "Bonus Computation not found!"});
+        }
+        res.send(bonusComputation);
+    }
+    catch(err) {
+        return res.status(400).send({message: err.message});
+    }
+};
