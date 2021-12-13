@@ -47,7 +47,7 @@ exports.findAll = async function(req, res) {
 
 exports.update = async function(req, res) {
     try {
-        const performanceRecord = await PerformanceRecord.findOneAndUpdate({sid: req.params.prid}, {
+        const performanceRecord = await PerformanceRecord.findByIdAndUpdate(req.params._id, {
             prid: req.body.prid,
             actualValue: req.body.actualValue,
             targetValue: req.body.targetValue,
@@ -66,7 +66,7 @@ exports.update = async function(req, res) {
 
 exports.delete = async function(req, res) {
     try {
-        const performanceRecord = await PerformanceRecord.findOneAndDelete({prid: req.params.prid});
+        const performanceRecord = await PerformanceRecord.findByIdAndUpdate(req.params._id);
         if(!performanceRecord) {
             res.status(404).send({
                 message: "Performance Record not found with prid: " + req.params.prid
