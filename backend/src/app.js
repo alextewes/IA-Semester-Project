@@ -6,6 +6,7 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const orangeHrmService = require('./services/orange-hrm-service');
+const openCrxService = require('./services/open-crx-service');
 
 
 const multer = require('multer');
@@ -75,3 +76,4 @@ async function initDb(db){
 }
 
 orangeHrmService.getAllEmployees().then(r => console.log("Salesmen updated!")).catch(err => console.log(err));
+openCrxService.createSalesOrders().then(r => console.log("Salesorders updated!")).catch(err => console.log(err));
