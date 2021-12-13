@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const SalesorderSchema = new mongoose.Schema({
+    _id: mongoose.Types.ObjectId,
     sid: Number,
     year: Number,
     product: String,
