@@ -1,0 +1,402 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Swagger of Alex Tewes, Mario Hönighausen, Jan Frericks",
+    "version": "1.0"
+  },
+  "produces": ["application/json"],
+  "host": "localhost:8080",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Salesman",
+      "description": "CRUD implementation for salesman with additional functionalities"
+    },
+    {
+      "name": "Performance Record",
+      "description": "CRUD implementation for performance records"
+    },
+    {
+      "name": "Bonus Computation",
+      "description": "Create implementation for bonusComputation"
+    },
+    {
+      "name": "Salesorder",
+      "description": "CR implemenation für salesorder"
+    },
+    {
+      "name": "User",
+      "description": "Current user session status"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/salesman": {
+      "post": {
+        "tags": [
+          "Salesman"
+        ],
+        "summary": "Create one salesman",
+        "operationId": "createSalesman",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Salesman"
+        ],
+        "summary": "Get all salesman",
+        "operationId": "getAllSalesman",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Array containing all salesman objects from MongoDb"
+          },
+          "401": {
+            "description": "unauthorized"
+          },
+          "404": {
+            "description": "Database currently has no salesman"
+          }
+        }
+      }
+    },
+    "/salesman/:sid": {
+      "get": {
+        "tags": [
+          "Salesman"
+        ],
+        "summary": "Get one salesman by sid",
+        "operationId": "getSalesmanById",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Salesman"
+        ],
+        "summary": "Update one salesman by sid",
+        "operationId": "updateOneById",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Salesman"
+        ],
+        "summary": "Delete one salesman by sid",
+        "operationId": "deleteSalemanById",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/performance-record": {
+      "post": {
+        "tags": [
+          "Performance Record"
+        ],
+        "summary": "Creates one performanceRecord",
+        "operationId": "createRecord",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Performance Record"
+        ],
+        "summary": "Get all performanceRecords",
+        "operationId": "findAll",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/performance-record/:sid": {
+      "get": {
+        "tags": [
+          "Performance Record"
+        ],
+        "summary": "Get one performanceRecord by SalesmanId",
+        "operationId": "findBySid",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+      "/performance-record/:_id": {
+        "put": {
+          "tags": [
+            "Performance Record"
+          ],
+          "summary": "Update one performanceRecord by PerformanceRecordId",
+          "operationId": "update",
+          "consumes": [
+            "application/json"
+          ],
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": "successful"
+            },
+            "401": {
+              "description": "unauthorized"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Performance Record"
+          ],
+          "summary": "Delete one performanceRecord by PerformanceRecordId",
+          "operationId": "getAllRecords",
+          "consumes": [
+            "application/json"
+          ],
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": "successful"
+            },
+            "401": {
+              "description": "unauthorized"
+            }
+          }
+        }
+      },
+    "/bonus-computation": {
+      "post": {
+        "tags": [
+          "Bonus Computation"
+        ],
+        "summary": "Creates bonus computation",
+        "operationId": "create",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/bonus-computation/:sid/:year": {
+      "get": {
+        "tags": [
+          "Bonus Computation"
+        ],
+        "summary": "Get bonus computation by sid and year",
+        "operationId": "findBySidAndYear",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/salesorder": {
+      "post": {
+        "tags": [
+          "Salesorder"
+        ],
+        "summary": "Creates salesOrder",
+        "operationId": "findBySidAndYear",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Salesorder"
+        ],
+        "summary": "Get salesOrder by sid and year",
+        "operationId": "findBySidAndYear",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get current user",
+        "operationId": "getSelf",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "login"
+        ],
+        "summary": "Get login status",
+        "operationId": "isLoggedIn",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "Create a new login",
+        "operationId": "login",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "login"
+        ],
+        "summary": "Logout of application",
+        "operationId": "logout",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    }
+  }
+}
