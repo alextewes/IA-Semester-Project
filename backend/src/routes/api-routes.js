@@ -23,12 +23,17 @@ router.delete('/salesman/:sid', salesmanApi.delete);
 
 const performanceRecordApi = require('../apis/performance-record-api');
 router.post('/performance-record', performanceRecordApi.create);
-router.get('/performance-record/:prid', performanceRecordApi.findBySid);
+router.get('/performance-record/:sid', performanceRecordApi.findBySid);
 router.get('/performance-record', performanceRecordApi.findAll);
-router.put('/performance-record/:prid', performanceRecordApi.update);
-router.delete('/performance-record/:prid', performanceRecordApi.delete);
+router.put('/performance-record/:_id', performanceRecordApi.update);
+router.delete('/performance-record/:_id', performanceRecordApi.delete);
 
 const bonusComputationApi = require('../apis/bonus-computation-api');
 router.post('/bonus-computation', bonusComputationApi.create);
+router.get('/bonus-computation/:sid/:year', bonusComputationApi.findBySidAndYear);
+
+const salesorderApi = require('../apis/salesorder-api');
+router.post('/salesorder', salesorderApi.create);
+router.get('/salesorder', salesorderApi.findBySidAndYear);
 
 module.exports = router;
