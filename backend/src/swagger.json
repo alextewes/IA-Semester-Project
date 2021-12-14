@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Swagger of Alex Tewes, Mario Hönighausen, Jan Frericks",
+    "title": "Swagger of Alexander Tewes, Mario Hönighausen, Jan Frericks",
     "version": "1.0"
   },
   "produces": ["application/json"],
@@ -57,15 +57,15 @@
         "tags": [
           "Salesman"
         ],
-        "summary": "Get all salesman",
-        "operationId": "getAllSalesman",
+        "summary": "Get all salesmen",
+        "operationId": "getAllSalesmen",
         "consumes": [
           "application/json"
         ],
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Array containing all salesman objects from MongoDb"
+            "description": "Array containing all salesman objects from MongoDB"
           },
           "401": {
             "description": "unauthorized"
