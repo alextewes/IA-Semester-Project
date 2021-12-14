@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
+
 const {checkAuthorization} = require('../middlewares/auth-middleware');
 
 /*
@@ -35,5 +39,8 @@ router.get('/bonus-computation/:sid/:year', bonusComputationApi.findBySidAndYear
 const salesorderApi = require('../apis/salesorder-api');
 router.post('/salesorder', salesorderApi.create);
 router.get('/salesorder', salesorderApi.findBySidAndYear);
+
+router.use('/api-docs', swaggerUi.serve);
+router.get('/api-docs', swaggerUi.setup(swaggerDocument));
 
 module.exports = router;
