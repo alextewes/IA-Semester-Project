@@ -5,7 +5,7 @@
     <form class="example-form">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Salesman</mat-label>
-        <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+        <input type="text" matInput [formControl]="myControl1" [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
             {{option}}
@@ -14,33 +14,33 @@
       </mat-form-field>
       <mat-form-field appearance="fill" >
         <mat-label>Year of performance</mat-label>
-        <input matInput type="number" placeholder="2021" [formControl]="myControl" value="2021">
+        <input matInput type="number" placeholder="2021" [formControl]="myControl" min="1950">
         <mat-error *ngIf="years < 1950">1950</mat-error>
       </mat-form-field>
     </form>
-    <ag-grid-angular style="width: 60%; height:50%;" class="ag-theme-alpine" [rowData]="baseRowData "
-                     [columnDefs]="baseColumnDefs">
+    <ag-grid-angular style="width: 60%; height:50%;" class="ag-theme-alpine" [rowData]="salesmenRowData "
+                     [columnDefs]="salesmenColumnDefs" [rowSelection]="rowSelection" (selectionChanged)="onSelectionChanged($event)">
     </ag-grid-angular>
   </div>
   <div
     style="display:flex; flex-direction: column; width:50%; height:1000px; justify-content: center; align-items:center">
     <div [ngClass]="'custom-table-container'">
-      <table [ngClass]="'custom-table'">
+      <table [ngClass]="'custom-table'" *ngIf="selectedSalesman">
         <tr>
           <th>Name:</th>
-          <td>John Smith</td>
+          <td>{{selectedSalesman.firstName}} {{selectedSalesman.lastName}}</td>
         </tr>
         <tr>
           <th>Employeed ID:</th>
-          <td>90123</td>
+          <td>{{selectedSalesman.employeeId}}</td>
         </tr>
         <tr>
           <th>Department:</th>
-          <td>Sales</td>
+          <td>{{selectedSalesman.department}}</td>
         </tr>
         <tr>
           <th>Year of Performance</th>
-          <td>2018</td>
+          <td>{{myControl.value}}</td>
         </tr>
       </table>
     </div>
@@ -59,7 +59,7 @@
     <div style="width:100%; height:50%; border:1px solid black;padding:10px;margin: 10px;">
       <p>B.) Social Performance Evaluation</p>
       <ag-grid-angular style="width: 75%; height:85%;" class="ag-theme-alpine"
-                       [rowData]="socialPerformanceRowData" [columnDefs]="socialPerformanceColumnDefs" (cellValueChanged)="method($event)">
+                       [rowData]="performanceRowData" [columnDefs]="performanceColumnDefs" (cellValueChanged)="method($event)">
       </ag-grid-angular>
       <table style="display:flex; flex-direction: row;justify-content: right">
         <tr>

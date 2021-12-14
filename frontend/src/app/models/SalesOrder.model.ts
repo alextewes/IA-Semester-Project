@@ -1,5 +1,5 @@
-interface SalesOrder{
-  id: number;
+export interface SalesOrder{
+  _id: string;
   sid: number;
   year: number;
   product: string;

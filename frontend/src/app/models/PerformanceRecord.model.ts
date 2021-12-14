@@ -1,5 +1,5 @@
 export interface PerformanceRecord {
-  prid: number;
+  _id: string;
   actualValue: number;
   targetValue: number;
   year: number;
