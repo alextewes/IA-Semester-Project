@@ -48,7 +48,7 @@
     <div style="width:100%; height:50%; border:1px solid black; padding:10px; margin: 10px;">
       <p>A.) Orders Evaluation</p>
       <ag-grid-angular style="width: 75%; height:85%;" class="ag-theme-alpine" [rowData]="ordersRowData"
-                       [columnDefs]="ordersColumnDefs" (cellValueChanged)="method($event)">
+                       [columnDefs]="ordersColumnDefs" (cellValueChanged)="updateBonus($event)">
       </ag-grid-angular>
       <table style="display:flex; flex-direction: row;justify-content: right">
         <tr>
@@ -60,7 +60,7 @@
     <div style="width:100%; height:50%; border:1px solid black;padding:10px;margin: 10px;">
       <p>B.) Social Performance Evaluation</p>
       <ag-grid-angular style="width: 75%; height:85%;" class="ag-theme-alpine"
-                       [rowData]="performanceRowData" [columnDefs]="performanceColumnDefs" (cellValueChanged)="method($event)">
+                       [rowData]="performanceRowData" [columnDefs]="performanceColumnDefs" (cellValueChanged)="updateBonus($event)">
       </ag-grid-angular>
       <table style="display:flex; flex-direction: row;justify-content: right">
         <tr>

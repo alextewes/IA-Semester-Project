@@ -13,6 +13,7 @@ import {SalesOrder} from '../../models/SalesOrder.model';
 import {PerformanceRecordService} from '../../services/performance-record.service';
 import {PerformanceRecord} from '../../models/PerformanceRecord.model';
 
+
 @Component({
   selector: 'app-bonus-computation-page',
   templateUrl: './bonus-computation-page.component.html',
@@ -27,6 +28,7 @@ export class BonusComputationPageComponent implements OnInit {
               private salesOrderService: SalesorderService,
               private performanceRecordService: PerformanceRecordService) {
   }
+
   @Input() selectedSalesman: Salesman = {} as Salesman;
   public yOP: number;
   years = 2030;
@@ -56,42 +58,47 @@ export class BonusComputationPageComponent implements OnInit {
     {productName: 'HooverClean ', client: 'Germania GmbH', clientRanking: 'good', items: 10, bonus: 200},*/
   ];
   performanceColumnDefs: ColDef[] = [
-    {field: 'prid', headerName: 'PrId', sortable: true, flex: 1},
-    /*{field: 'category', headerName: ' Category', sortable: true, flex: 1},*/
+    /*{field: 'prid', headerName: 'PrId', sortable: true, flex: 1},*/
     {field: 'actualValue', headerName: 'Actual Value', sortable: true, editable: true, flex: 1},
     {field: 'targetValue', headerName: 'Target Value', sortable: true, editable: true, flex: 1},
     {field: 'year', headerName: 'Year', sortable: true, editable: true, flex: 1},
     {field: 'goalDesc', headerName: 'Goal Description', sortable: true, editable: true, flex: 1},
-    {field: 'sid', headerName: 'Sid', sortable: true, editable: true, flex: 1},
+    {field: 'bonus', headerName: 'Bonus', sortable: true, editable: true, flex: 1},
+    {field: 'sid', headerName: 'Sid', sortable: true, editable: true, flex: 1}
   ];
-  performanceRowData = [
-    /*{category: 'Leadership Competence', targetValue: 4, actualValue: 3, bonus: 20},
-    {category: 'Openness to Employee', targetValue: 4, actualValue: 3, bonus: 20},
-    {category: 'Social Behaviour to Employee', targetValue: 4, actualValue: 3, bonus: 100},
-    {category: 'Attitude towards Client', targetValue: 4, actualValue: 3, bonus: 20},
-    {category: 'Communication Skills', targetValue: 4, actualValue: 3, bonus: 50},
-    {category: 'Integrity to Company', targetValue: 4, actualValue: 3, bonus: 20}*/
+  performanceRowData = [];
+  performanceRowDataEmpty = [
+    {goalDesc: 'Leadership Competence', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
+    {goalDesc: 'Openness to Employee', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
+    {goalDesc: 'Social Behaviour to Employee', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
+    {goalDesc: 'Attitude towards Client', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
+    {goalDesc: 'Communication Skills', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
+    {goalDesc: 'Integrity to Company', targetValue: 0, actualValue: 0, bonus: 0, sid: 0}
   ];
   myControl = new FormControl();
   myControl1 = new FormControl();
+  autoCompleteControl = new FormControl();
+  filteredAutoCompleteOptions: Observable<string[]>;
+  salesmenGridApi;
   options: string[];
   @Input() currentValue = '2021';
   filteredOptions: Observable<string[]>;
   bonuses = {
-    totalBonusAB: 10,
-    totalBonusA: 10,
-    totalBonusB: 10
+    totalBonusAB: 0,
+    totalBonusA: 0,
+    totalBonusB: 0
   };
 
   /*@Input() totalBonusAB: number;
   @Output() totalBonusABChange = new EventEmitter<number>();*/
 
-  method(event): void {
+  updateBonus(event): void {
     this.ordersRowData.forEach(element => {
-      this.bonuses.totalBonusA = +element.bonus;
+      this.bonuses.totalBonusA += parseInt(element.bonus, 0);
+      console.log(element.bonus);
     });
-    this.performanceRowData.forEach(x => {
-      this.bonuses.totalBonusB = +x.bonus;
+    this.performanceRowDataEmpty.forEach(x => {
+      this.bonuses.totalBonusB += Number(x.bonus);
     });
     this.bonuses.totalBonusAB = this.bonuses.totalBonusA + this.bonuses.totalBonusB;
   }
@@ -116,8 +123,8 @@ export class BonusComputationPageComponent implements OnInit {
         });
   }
 
-  getSalesOrders(sid: number): void {
-    this.salesOrderService.getSalesOrders(sid)
+  getSalesOrders(sid: number, year: number): void {
+    this.salesOrderService.getSalesOrders(sid, year)
       .subscribe((data: SalesOrder[]) => {
           this.ordersRowData = data;
         },
@@ -125,43 +132,103 @@ export class BonusComputationPageComponent implements OnInit {
           console.log(error.message);
         });
   }
-  getPerformanceRecords(): void {
-    this.performanceRecordService.getPerformanceRecords()
+
+  getPerformanceRecordsBySid(sid: number): void {
+    this.performanceRecordService.getPerformnanceRecordsById(sid)
       .subscribe((data: PerformanceRecord[]) => {
-          this.performanceRowData = data;
+          // this.performanceRowDataEmpty = data;
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
         });
   }
-  onSelectionChanged(event): void{
+  postBonusComputation(bonusComputation: BonusComputation): void {
+    this.bonusComputationService.postBonusComputation(bonusComputation)
+      .subscribe(res => {
+         console.log(res);
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        });
+  }
+  postPerformanceRecord(performanceRecord: PerformanceRecord): void {
+    this.performanceRecordService.postPeformanceRcord(performanceRecord)
+      .subscribe(res => {
+          console.log(res);
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        });
+  }
+
+  onSelectionChanged(event): void {
     const selectedRows = event.api.getSelectedRows();
     console.log(selectedRows.length === 1 ? selectedRows[0].firstName : '');
-    if (selectedRows.length === 1){
+    if (selectedRows.length === 1) {
       Object.entries(selectedRows[0]).forEach(([key, value]) => {
         this.selectedSalesman[key] = value;
       });
+      this.getSalesOrders(this.selectedSalesman._id, this.myControl.value);
+      this.performanceRowData = this.performanceRowDataEmpty;
     }
+  }
+  export(): void{
+    /* let bonusComputation: BonusComputation;
+    bonusComputation.sid = this.selectedSalesman._id;
+    bonusComputation.year = parseInt(this.myControl.value(), 10);
+    bonusComputation.value = this.bonuses.totalBonusAB;
+    this.ordersRowData.forEach((order) => bonusComputation.salesOrders.push(order._id));
+    this.performanceRowData.forEach((performance) => {performance.sid = this.selectedSalesman._id;
+    this.postPerformanceRecord(performance)});
+    this.getPerformanceRecordsBySid(this.selectedSalesman._id);
+    this.performanceRowData.forEach((performance) => bonusComputation.performanceRecords.push(performance._id));
+    this.postBonusComputation(bonusComputation); */
   }
   ngOnInit(): void {
     this.getSalesmen();
-
-    this.getPerformanceRecords();
     this.myControl.setValue('2021');
-    this.filteredOptions = this.myControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value)),
-    );
     this.salesmenRowData.forEach((element) => {
       this.options.push(element.firstName + '' + element.lastName);
     });
-    // this.getSalesOrders(sid);
-    // this.getBonusComputations(2021,);
+    this.filteredAutoCompleteOptions = this.autoCompleteControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value)),
+    );
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+    const fValue = value.toLowerCase();
+    const filteredSalesmen = this.salesmenRowData.filter(option => {
+      return (option.firstName + ' ' + option.lastName).toLowerCase().includes(fValue);
+    });
+    return filteredSalesmen.map(salesman => salesman.firstName);
   }
 
+  onGridReady(params): void {
+    this.salesmenGridApi = params.api;
+  }
+
+  onSelFunc(option): void {
+    filterValue = option;
+    console.log(filterValue);
+    this.salesmenGridApi.onFilterChanged();
+  }
+  clearInput(): void{
+    this.autoCompleteControl.setValue('');
+    filterValue = '';
+    this.salesmenGridApi.onFilterChanged();
+  }
+  checkInput(): void{
+    filterValue = this.autoCompleteControl.value;
+    console.log(this.autoCompleteControl.value);
+    this.salesmenGridApi.onFilterChanged();
+  }
+  isExternalFilterPresent(): boolean {
+    console.log(filterValue !== '');
+    return filterValue !== '';
+  }
+  doesExternalFilterPass(node): boolean {
+    return node.data.firstName.toLowerCase().includes(filterValue.toLowerCase());
+  }
 }
+let filterValue = '';
