@@ -36,3 +36,19 @@ exports.findBySidAndYear = async function(req, res) {
         return res.status(400).send({message: err.message});
     }
 };
+
+exports.update = async function(req, res) {
+    try{
+        const salesorder = await Salesorder.findByIdAndUpdate(req.params._id, {
+            bonus: req.body.bonus
+        }, {new: true});
+        console.log(salesorder)
+        if(!salesorder) {
+            return res.status(404).send({message: "Salesorder not found!"});
+        }
+        res.send(salesorder);
+    }
+    catch(err) {
+        return res.status(400).send({message: err.message});
+    }
+}

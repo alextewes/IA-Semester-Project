@@ -37,6 +37,7 @@ router.get('/bonus-computation/:sid/:year', bonusComputationApi.findBySidAndYear
 const salesorderApi = require('../apis/salesorder-api');
 router.post('/salesorder', salesorderApi.create);
 router.get('/salesorder/:sid/:year', salesorderApi.findBySidAndYear);
+router.put('/salesorder/:_id', salesorderApi.update);
 
 const swaggerUi = require('swagger-ui-express');
 router.use('/api-docs', swaggerUi.serve);
