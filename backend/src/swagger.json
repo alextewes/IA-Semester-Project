@@ -302,7 +302,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "bonus computation object that needs to be added to the store",
+            "description": "bonus computation object thats need to be added",
             "schema": {
               "$ref": "#/definitions/bonus-computation"
             }
@@ -360,7 +360,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "salesOrder object that needs to be added to the store",
+            "description": "salesOrder object that needs to be added",
             "schema": {
               "$ref": "#/definitions/Salesorder"
             }
