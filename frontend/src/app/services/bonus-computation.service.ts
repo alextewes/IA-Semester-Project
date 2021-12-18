@@ -12,6 +12,9 @@ export class BonusComputationService {
     this.baseUrl = 'localhost:8080/api/bonus-computation';
   }
   public getBonusComputations(sid: number, year: number, ): Observable<BonusComputation[]>{
-    return this.httpClient.get<BonusComputation[]>(this.baseUrl);
+    return this.httpClient.get<BonusComputation[]>(this.baseUrl + '/' + sid + '/' + year);
+  }
+  public postBonusComputation(bonusComputation: BonusComputation): Observable<BonusComputation>{
+    return this.httpClient.post<BonusComputation>(this.baseUrl, bonusComputation);
   }
 }
