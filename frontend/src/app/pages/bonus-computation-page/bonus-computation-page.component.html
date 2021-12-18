@@ -5,9 +5,10 @@
     <form class="example-form">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Salesman</mat-label>
-        <input type="text" matInput [formControl]="myControl1" [matAutocomplete]="auto">
+        <input type="text" matInput [formControl]="autoCompleteControl" [matAutocomplete]="auto" (input)="checkInput()">
+        <button matSuffix mat-icon-button (click)="clearInput()"><mat-icon>close</mat-icon></button>
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          <mat-option *ngFor="let option of filteredAutoCompleteOptions | async" [value]="option" (onSelectionChange)="onSelFunc(option)" >
             {{option}}
           </mat-option>
         </mat-autocomplete>
@@ -19,7 +20,7 @@
       </mat-form-field>
     </form>
     <ag-grid-angular style="width: 60%; height:50%;" class="ag-theme-alpine" [rowData]="salesmenRowData "
-                     [columnDefs]="salesmenColumnDefs" [rowSelection]="rowSelection" (selectionChanged)="onSelectionChanged($event)">
+                     [columnDefs]="salesmenColumnDefs" [rowSelection]="rowSelection" (selectionChanged)="onSelectionChanged($event)" (gridReady)="onGridReady($event)" [isExternalFilterPresent]="isExternalFilterPresent" [doesExternalFilterPass]="doesExternalFilterPass" >
     </ag-grid-angular>
   </div>
   <div
@@ -87,7 +88,7 @@
         </mat-form-field>
       </div>
       <div>
-        <button mat-button>Export</button>
+        <button mat-button (click)="export()">Export</button>
       </div>
     </div>
   </div>
