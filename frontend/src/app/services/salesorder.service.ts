@@ -10,9 +10,9 @@ export class SalesorderService {
 
   private baseUrl: string;
   constructor(private httpClient: HttpClient) {
-    this.baseUrl = 'http://localhost:8080/api/sales-order' ;
+    this.baseUrl = '/api/salesorder' ;
   }
-  public getSalesOrders(sid: number): Observable<SalesOrder[]>{
-    return this.httpClient.get<SalesOrder[]>(this.baseUrl);
+  public getSalesOrders(sid: number, year: number): Observable<SalesOrder[]>{
+    return this.httpClient.get<SalesOrder[]>(this.baseUrl + '/' + sid + '/' + year);
   }
 }
