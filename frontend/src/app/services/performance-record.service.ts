@@ -15,4 +15,10 @@ export class PerformanceRecordService {
   public getPerformanceRecords(): Observable<PerformanceRecord[]>{
     return this.httpClient.get<PerformanceRecord[]>(this.baseUrl);
   }
+  public getPerformanceRecordsBySidAndYear(sid: number, year: number): Observable<PerformanceRecord[]>{
+    return this.httpClient.get<PerformanceRecord[]>(this.baseUrl + '/' + sid + '/' + year);
+  }
+  public postPeformanceRecord(performanceRecord: PerformanceRecord): Observable<PerformanceRecord>{
+    return this.httpClient.post<PerformanceRecord>(this.baseUrl, performanceRecord);
+  }
 }

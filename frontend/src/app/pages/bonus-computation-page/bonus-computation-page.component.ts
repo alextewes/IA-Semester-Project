@@ -133,8 +133,8 @@ export class BonusComputationPageComponent implements OnInit {
         });
   }
 
-  getPerformanceRecordsBySid(sid: number): void {
-    this.performanceRecordService.getPerformnanceRecordsById(sid)
+  getPerformanceRecordsBySid(sid: number, year): void {
+    this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year)
       .subscribe((data: PerformanceRecord[]) => {
           // this.performanceRowDataEmpty = data;
         },
@@ -152,7 +152,7 @@ export class BonusComputationPageComponent implements OnInit {
         });
   }
   postPerformanceRecord(performanceRecord: PerformanceRecord): void {
-    this.performanceRecordService.postPeformanceRcord(performanceRecord)
+    this.performanceRecordService.postPeformanceRecord(performanceRecord)
       .subscribe(res => {
           console.log(res);
         },
