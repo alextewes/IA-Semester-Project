@@ -25,7 +25,7 @@ router.delete('/salesman/:sid', salesmanApi.delete);
 
 const performanceRecordApi = require('../apis/performance-record-api');
 router.post('/performance-record', performanceRecordApi.create);
-router.get('/performance-record/:sid', performanceRecordApi.findBySid);
+router.get('/performance-record/:sid/:year', performanceRecordApi.findBySidAndYear);
 router.get('/performance-record', performanceRecordApi.findAll);
 router.put('/performance-record/:_id', performanceRecordApi.update);
 router.delete('/performance-record/:_id', performanceRecordApi.delete);

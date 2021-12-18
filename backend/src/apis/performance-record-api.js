@@ -22,9 +22,9 @@ exports.create = async function(req, res) {
     }
 };
 
-exports.findBySid = async function(req, res) {
+exports.findBySidAndYear = async function(req, res) {
     try {
-        const performanceRecord = await PerformanceRecord.findOne({sid: req.params.prid});
+        const performanceRecord = await PerformanceRecord.find({sid: req.params.sid, year: req.params.year});
         if(!performanceRecord) {
             return res.status(404).send({message: "performanceRecord not found!"});
         }
