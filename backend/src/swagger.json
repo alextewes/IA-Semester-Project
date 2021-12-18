@@ -43,7 +43,16 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Salesman object thats need to be added",
+            "schema": {
+              "$ref": "#/definitions/Salesman"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -86,7 +95,11 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [{
+          "description": "ID of salesman that needs to be fetched",
+          "in": "sid",
+          "type": "integer"
+        }],
         "responses": {
           "201": {
             "description": "successful"
@@ -105,7 +118,16 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Salesman object that needs to be updated",
+            "schema": {
+              "$ref": "#/definitions/Salesman"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -124,7 +146,11 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [{
+          "description": "ID of salesman to delete",
+          "in": "sid",
+          "type": "integer"
+        }],
         "responses": {
           "201": {
             "description": "successful"
@@ -145,7 +171,16 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "performanceRecord object that needs to be added",
+            "schema": {
+              "$ref": "#/definitions/Performance-Record"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -185,7 +220,11 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [{
+          "description": "ID of performanceRecord that needs to be fetched",
+          "in": "sid",
+          "type": "integer"
+        }],
         "responses": {
           "201": {
             "description": "successful"
@@ -206,7 +245,16 @@
           "consumes": [
             "application/json"
           ],
-          "parameters": [],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "performanceRecord object that needs to be updated",
+              "schema": {
+                "$ref": "#/definitions/Performance-Record"
+              }
+            }
+          ],
           "responses": {
             "201": {
               "description": "successful"
@@ -225,7 +273,11 @@
           "consumes": [
             "application/json"
           ],
-          "parameters": [],
+          "parameters": [{
+            "description": "ID of performanceRecord to delete",
+            "in": "sid",
+            "type": "integer"
+          }],
           "responses": {
             "201": {
               "description": "successful"
@@ -246,7 +298,16 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "bonus computation object that needs to be added to the store",
+            "schema": {
+              "$ref": "#/definitions/bonus-computation"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -267,7 +328,14 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [{
+          "name": "body",
+          "description": "id and year of performanceRecord that needs to be fetched",
+          "in": "body",
+          "schema": {
+            "$ref": "#/definitions/id_year"
+          }
+        }],
         "responses": {
           "201": {
             "description": "successful"
@@ -288,7 +356,16 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "salesOrder object that needs to be added to the store",
+            "schema": {
+              "$ref": "#/definitions/Salesorder"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -297,7 +374,9 @@
             "description": "unauthorized"
           }
         }
-      },
+      }
+    },
+    "/salesorder/:sid/:year": {
       "get": {
         "tags": [
           "Salesorder"
@@ -307,7 +386,14 @@
         "consumes": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [{
+          "name": "body",
+          "description": "id and year of salesOrder that needs to be fetched",
+          "in": "body",
+          "schema": {
+            "$ref": "#/definitions/id_year"
+          }
+        }],
         "responses": {
           "201": {
             "description": "successful"
@@ -398,5 +484,147 @@
         }
       }
     }
+  },
+  "definitions": {
+    "Salesman": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "format": "int64",
+          "example": "1"
+        },
+        "employeeId":{
+          "type": "number",
+          "format": "int64",
+          "example": "1234"
+        },
+        "firstname": {
+          "type": "string",
+          "example": "Max"
+        },
+        "lastname": {
+          "type": "string",
+          "example": "Musterman"
+        },
+        "dob": {
+          "type": "string",
+          "example": "1999"
+        },
+        "department": {
+          "type": "string",
+          "example": "Sales"
+        }
+        }
+      },
+    "Performance-Record": {
+      "properties": {
+        "actualValue": {
+          "type": "number",
+          "format": "int64",
+          "example": "101"
+        },
+        "targetValue":{
+          "type": "number",
+          "format": "int64",
+          "example": "100"
+        },
+        "year": {
+          "type": "number",
+          "format": "int64",
+          "example": "2000"
+        },
+        "goalDesc": {
+          "type": "string",
+          "example": "Test Desc"
+        },
+        "sid": {
+          "type": "number",
+          "format": "int64",
+          "example": "01"
+        }
+      }
+    },
+    "Salesorder": {
+      "properties": {
+        "sid": {
+          "type": "number",
+          "format": "int64",
+          "example": "01"
+        },
+        "year":{
+          "type": "number",
+          "format": "int64",
+          "example": 2000
+        },
+        "product": {
+          "type": "string",
+          "example": "Hoover"
+        },
+        "customerName": {
+          "type": "string",
+          "example": "Telekom"
+        },
+        "clientRanking": {
+          "type": "number",
+          "format": "int64",
+          "example": "15"
+        },
+        "items": {
+          "type": "number",
+          "format": "int64",
+          "example": "32"
+        },
+        "bonus": {
+          "type": "number",
+          "format": "int64",
+          "example": "150"
+        }
+      }
+    },
+    "bonus-computation": {
+      "properties": {
+        "sid": {
+          "type": "number",
+          "format": "int64",
+          "example": "1"
+        },
+        "year":{
+          "type": "number",
+          "format": "int64",
+          "example": "2000"
+        },
+        "value": {
+          "type": "number",
+          "format": "int64",
+          "example": "Max"
+        },
+        "performanceRecords": {
+          "type": "array",
+          "example": "Musterman"
+        },
+        "salesOrders": {
+          "type": "array",
+          "example": "1999"
+        },
+        "department": {
+          "type": "string",
+          "example": "Sales"
+        }
+      }
+    },
+    "id_year":{
+      "properties": {
+        "sid": {
+          "type": "number",
+          "description": "sid of salesman",
+          "example": 1
+        },
+        "year": {
+          "type": "number",
+          "description": "year",
+          "example": 2000
+        }
+      }
+    }
+    }
   }
-}
