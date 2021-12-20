@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { from, Observable, of} from 'rxjs';
+import {concatMap, map, mergeMap, startWith} from 'rxjs/operators';
 import {BonusComputationService} from '../../services/bonus-computation.service';
 import {BonusComputation} from '../../models/BonusComputation.model';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -12,7 +12,6 @@ import {SalesorderService} from '../../services/salesorder.service';
 import {SalesOrder} from '../../models/SalesOrder.model';
 import {PerformanceRecordService} from '../../services/performance-record.service';
 import {PerformanceRecord} from '../../models/PerformanceRecord.model';
-
 
 @Component({
   selector: 'app-bonus-computation-page',
@@ -93,10 +92,12 @@ export class BonusComputationPageComponent implements OnInit {
   @Output() totalBonusABChange = new EventEmitter<number>();*/
 
   updateBonus(event): void {
+    this.bonuses.totalBonusA = 0;
     this.ordersRowData.forEach(element => {
       this.bonuses.totalBonusA += parseInt(element.bonus, 0);
       console.log(element.bonus);
     });
+    this.bonuses.totalBonusB = 0;
     this.performanceRowDataEmpty.forEach(x => {
       this.bonuses.totalBonusB += Number(x.bonus);
     });
@@ -133,28 +134,40 @@ export class BonusComputationPageComponent implements OnInit {
         });
   }
 
-  getPerformanceRecordsBySid(sid: number, year): void {
+  getPerformanceRecordsBySidAndYear(sid: number, year): void {
     this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year)
       .subscribe((data: PerformanceRecord[]) => {
-          // this.performanceRowDataEmpty = data;
+          this.performanceRowDataEmpty = data;
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
         });
   }
+
   postBonusComputation(bonusComputation: BonusComputation): void {
     this.bonusComputationService.postBonusComputation(bonusComputation)
       .subscribe(res => {
-         console.log(res);
+          console.log(res);
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
         });
   }
+
   postPerformanceRecord(performanceRecord: PerformanceRecord): void {
     this.performanceRecordService.postPeformanceRecord(performanceRecord)
       .subscribe(res => {
           console.log(res);
+        },
+        (error: HttpErrorResponse) => {
+          return error.message;
+        });
+  }
+
+  getPerformanceRecordsBySidAfterUpdate(sid: number, year): void {
+    this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year)
+      .subscribe((data: PerformanceRecord[]) => {
+          // this.performanceRowDataEmpty = data;
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
@@ -172,18 +185,29 @@ export class BonusComputationPageComponent implements OnInit {
       this.performanceRowData = this.performanceRowDataEmpty;
     }
   }
-  export(): void{
-    /* let bonusComputation: BonusComputation;
+
+  export(): void {
+    const bonusComputation: BonusComputation = {sid: 0, year: 0, value: 0, salesOrders: [], performanceRecords: []};
     bonusComputation.sid = this.selectedSalesman._id;
-    bonusComputation.year = parseInt(this.myControl.value(), 10);
+    bonusComputation.year = parseInt(this.myControl.value, 10);
     bonusComputation.value = this.bonuses.totalBonusAB;
     this.ordersRowData.forEach((order) => bonusComputation.salesOrders.push(order._id));
-    this.performanceRowData.forEach((performance) => {performance.sid = this.selectedSalesman._id;
-    this.postPerformanceRecord(performance)});
-    this.getPerformanceRecordsBySid(this.selectedSalesman._id);
+   /* const augmentedPerformances = of(this.performanceRowData.map((performance) => {
+      performance.sid = this.selectedSalesman._id;
+      performance.year = this.myControl.value;
+      this.performanceRecordService.postPeformanceRecord(performance);
+    }));
+    augmentedPerformances.subscribe(val => console.log(val));*/
+    this.performanceRowData.forEach((performance) => {
+      performance.sid = this.selectedSalesman._id;
+      performance.year = this.myControl.value;
+      this.postPerformanceRecord(performance); });
+    this.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, parseInt(this.myControl.value, 10));
     this.performanceRowData.forEach((performance) => bonusComputation.performanceRecords.push(performance._id));
-    this.postBonusComputation(bonusComputation); */
+    console.log(bonusComputation);
+    this.postBonusComputation(bonusComputation);
   }
+
   ngOnInit(): void {
     this.getSalesmen();
     this.myControl.setValue('2021');
@@ -213,22 +237,27 @@ export class BonusComputationPageComponent implements OnInit {
     console.log(filterValue);
     this.salesmenGridApi.onFilterChanged();
   }
-  clearInput(): void{
+
+  clearInput(): void {
     this.autoCompleteControl.setValue('');
     filterValue = '';
     this.salesmenGridApi.onFilterChanged();
   }
-  checkInput(): void{
+
+  checkInput(): void {
     filterValue = this.autoCompleteControl.value;
     console.log(this.autoCompleteControl.value);
     this.salesmenGridApi.onFilterChanged();
   }
+
   isExternalFilterPresent(): boolean {
     console.log(filterValue !== '');
     return filterValue !== '';
   }
+
   doesExternalFilterPass(node): boolean {
     return node.data.firstName.toLowerCase().includes(filterValue.toLowerCase());
   }
 }
+
 let filterValue = '';
