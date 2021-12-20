@@ -9,6 +9,7 @@ describe("when stubbed", () => {
     let responseObject = null;
     let responseBody = null;
     beforeEach(() => {
+        this.get = sinon.stub(request, 'get');
         responseObject = {
             statusCode: 200,
             headers: {
@@ -25,7 +26,10 @@ describe("when stubbed", () => {
                 "sid": "01"
             }
         }
-        this.get = sinon.stub(request, 'get');
+    });
+
+    afterEach(() => {
+        request.get.restore();
     });
 
     describe('GET performance record by id', () => {
@@ -47,6 +51,17 @@ describe("when stubbed", () => {
                 body.data.sid.should.eql('01');
                 done();
             })
+        })
+
+        it('should throw an error if the record does not exist', (done) => {
+            request.get(`${baseUrl}/performance-record/:000`, (err, res, body) => {
+                res.statusCode.should.eql(404);
+                res.headers['content-type'].should.contain('application/json');
+                body = JSON.parse(body);
+                body.status.should.eql('error');
+                body.message.should.eql('That record does not exist.');
+            })
+            done();
         })
     })
 })

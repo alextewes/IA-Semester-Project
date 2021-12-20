@@ -29,6 +29,10 @@ describe("when stubbed", () => {
         this.get = sinon.stub(request, 'get');
     });
 
+    afterEach(() => {
+        request.get.restore();
+    });
+
     describe('GET Salesman find by id', () => {
         it('should return the salesman according to id', (done) => {
             this.get.yields(null, responseObject, JSON.stringify(responseBody));
@@ -49,6 +53,17 @@ describe("when stubbed", () => {
                 body.data.department.should.eql('Sales');
                 done();
             })
+        })
+        
+        it('should throw an error if the salesman does not exist', (done) => {
+            request.get(`${baseUrl}/salesman/0000`, (err, res, body) => {
+                res.statusCode.should.eql(404);
+                res.headers['content-type'].should.contain('application/json');
+                body = JSON.parse(body);
+                body.status.should.eql('error');
+                body.message.should.eql('That record does not exist.');
+            })
+            done();
         })
     })
 })

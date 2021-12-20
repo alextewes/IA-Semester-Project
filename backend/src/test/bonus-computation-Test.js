@@ -26,6 +26,11 @@ describe("when stubbed", () => {
             }
         }
         this.get = sinon.stub(request, 'get');
+
+    });
+
+    afterEach(() => {
+        request.get.restore();
     });
 
     describe('GET bonus computation by id and year', () => {
@@ -47,6 +52,17 @@ describe("when stubbed", () => {
                 body.data.salesOrders.should.eql('5');
                 done();
             })
+        })
+
+        it('should throw an error if the bonus computation does not exist', (done) => {
+            request.get(`${baseUrl}/bonus-computation/:000/:000`, (err, res, body) => {
+                res.statusCode.should.eql(404);
+                res.headers['content-type'].should.contain('application/json');
+                body = JSON.parse(body);
+                body.status.should.eql('error');
+                body.message.should.eql('That record does not exist.');
+            })
+            done();
         })
     })
 })
