@@ -10,7 +10,7 @@ export class PerformanceRecordService {
 
   private baseUrl: string;
   constructor(private httpClient: HttpClient) {
-    this.baseUrl = 'http://localhost:8080/api/performance-record' ;
+    this.baseUrl = '/api/performance-record' ;
   }
   public getPerformanceRecords(): Observable<PerformanceRecord[]>{
     return this.httpClient.get<PerformanceRecord[]>(this.baseUrl);
