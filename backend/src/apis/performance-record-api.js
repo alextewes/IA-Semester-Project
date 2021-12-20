@@ -9,7 +9,8 @@ exports.create = async function(req, res) {
             targetValue: req.body.targetValue,
             year: req.body.year,
             goalDesc: req.body.goalDesc,
-            sid: req.body.sid
+            sid: req.body.sid,
+            bonus: req.body.bonus
         });
         // save performanceRecord in database
         const data = await performanceRecord.save();
@@ -53,7 +54,8 @@ exports.update = async function(req, res) {
             targetValue: req.body.targetValue,
             year: req.body.year,
             goalDesc: req.body.goalDesc,
-            sid: req.body.sid
+            sid: req.body.sid,
+            bonus:req.body.bonus
         }, {new: true});
         res.send(performanceRecord);
     }

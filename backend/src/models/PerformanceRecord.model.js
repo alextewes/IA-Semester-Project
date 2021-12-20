@@ -5,7 +5,8 @@ const PerformanceRecordSchema = new mongoose.Schema({
     targetValue: Number,
     year: Number,
     goalDesc: String,
-    sid: Number
+    sid: Number,
+    bonus: Number
 
 });
 
