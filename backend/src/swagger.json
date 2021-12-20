@@ -210,21 +210,26 @@
         }
       }
     },
-    "/performance-record/:sid": {
+    "/performance-record/:sid:year": {
       "get": {
         "tags": [
           "Performance Record"
         ],
-        "summary": "Get one performanceRecord by SalesmanId",
-        "operationId": "findBySid",
+        "summary": "Get one performanceRecord by SalesmanId and Year",
+        "operationId": "findBySidandYear",
         "consumes": [
           "application/json"
         ],
-        "parameters": [{
-          "description": "ID of performanceRecord that needs to be fetched",
-          "in": "sid",
-          "type": "integer"
-        }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Id and Year of salesOrder object that needs to be fetched",
+            "schema": {
+              "$ref": "#/definitions/id_year"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
@@ -394,6 +399,36 @@
             "$ref": "#/definitions/id_year"
           }
         }],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/salesorder/:_id": {
+      "put": {
+        "tags": [
+          "Salesorder"
+        ],
+        "summary": "Update one salesOrder by Id",
+        "operationId": "update",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "salesOrder object that needs to be updated",
+            "schema": {
+              "$ref": "#/definitions/Salesorder"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "successful"
