@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
-import { from, Observable, of} from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import {concatMap, map, mergeMap, startWith} from 'rxjs/operators';
 import {BonusComputationService} from '../../services/bonus-computation.service';
 import {BonusComputation} from '../../models/BonusComputation.model';
@@ -192,20 +192,21 @@ export class BonusComputationPageComponent implements OnInit {
     bonusComputation.year = parseInt(this.myControl.value, 10);
     bonusComputation.value = this.bonuses.totalBonusAB;
     this.ordersRowData.forEach((order) => bonusComputation.salesOrders.push(order._id));
-   /* const augmentedPerformances = of(this.performanceRowData.map((performance) => {
+    Promise.all(this.performanceRowData.map((performance) => {
       performance.sid = this.selectedSalesman._id;
       performance.year = this.myControl.value;
-      this.performanceRecordService.postPeformanceRecord(performance);
-    }));
-    augmentedPerformances.subscribe(val => console.log(val));*/
-    this.performanceRowData.forEach((performance) => {
-      performance.sid = this.selectedSalesman._id;
-      performance.year = this.myControl.value;
-      this.postPerformanceRecord(performance); });
-    this.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, parseInt(this.myControl.value, 10));
-    this.performanceRowData.forEach((performance) => bonusComputation.performanceRecords.push(performance._id));
-    console.log(bonusComputation);
-    this.postBonusComputation(bonusComputation);
+      return this.performanceRecordService.postPeformanceRecord(performance).toPromise();
+    })).then(r => console.log(r));
+    /* this.performanceRowData.forEach((performance) => {
+       performance.sid = this.selectedSalesman._id;
+       performance.year = this.myControl.value;
+       this.postPerformanceRecord(performance); });*/
+
+    this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, parseInt(this.myControl.value, 10))
+      .toPromise().then(x => {
+        x.forEach(item => bonusComputation.performanceRecords.push(item._id));
+        this.postBonusComputation(bonusComputation); } );
+
   }
 
   ngOnInit(): void {
