@@ -9,7 +9,7 @@ import {BonusComputation} from '../models/BonusComputation.model';
 export class BonusComputationService {
   private readonly baseUrl: string;
   constructor(private httpClient: HttpClient) {
-    this.baseUrl = 'localhost:8080/api/bonus-computation';
+    this.baseUrl = '/api/bonus-computation';
   }
   public getBonusComputations(sid: number, year: number, ): Observable<BonusComputation[]>{
     return this.httpClient.get<BonusComputation[]>(this.baseUrl + '/' + sid + '/' + year);
