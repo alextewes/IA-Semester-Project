@@ -5,4 +5,5 @@ export interface PerformanceRecord {
   year: number;
   goalDesc: string;
   sid: number;
+  bonus: number;
 }
