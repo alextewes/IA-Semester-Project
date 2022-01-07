@@ -41,7 +41,9 @@ app.use(session({
     }
 }));
 
-const apiRouter = require('./routes/api-routes'); //get api-router from routes/api
+const apiRouter = require('./routes/api-routes');
+const userService = require("./services/user-service");
+const User = require("./models/User"); //get api-router from routes/api
 app.use('/api', apiRouter); //mount api-router at path "/api"
 // !!!! attention all middlewares, mounted after the router wont be called for any requests
 
@@ -56,6 +58,7 @@ MongoClient.connect('mongodb://' + credentials + domain + ':' + port + '/').then
 
     const db = dbo.db(databaseName);
     await initDb(db); //run initialization function
+    await initStandardUsers(db);
     app.set('db',db); //register database in the express app
 
     app.listen(8080, () => { //start webserver, after database-connection was established
@@ -63,15 +66,34 @@ MongoClient.connect('mongodb://' + credentials + domain + ':' + port + '/').then
     });
 });
 
+const getRandomPassword = () => crypto.randomBytes(8).toString('base64');
+
 async function initDb(db){
     if(await db.collection('users').count() < 1){ //if no user exists create admin user
         const userService = require('./services/user-service');
         const User = require("./models/User");
 
-        const adminPassword = crypto.randomBytes(8).toString('base64');
-        await userService.add(db, new User('admin', '', 'admin', '', adminPassword, true));
+        const adminPassword = getRandomPassword();
+        await userService.add(db, new User('admin', '', 'admin', '', adminPassword, true, 0));
 
         console.log('created admin user with password: '+adminPassword);
+    }
+}
+
+async function initStandardUsers(db){
+    if(await db.collection('users').count() < 4){ //if no user exists create admin user
+        const userService = require('./services/user-service');
+        const User = require("./models/User");
+
+        const randomPasswords = [getRandomPassword(), getRandomPassword(), getRandomPassword()];
+        const usernames = ['ceo', 'hr', 'salesman'];
+        await userService.add(db, new User(usernames[0], 'Michael', 'Moore', '', randomPasswords[0], false, 1));
+        await userService.add(db, new User(usernames[1], 'Chantal', 'Banks', '', randomPasswords[1], false, 2));
+        await userService.add(db, new User(usernames[2], 'John', 'Smith', '', randomPasswords[2], false, 3));
+
+        for(let i = 0; i < 3; ++i) {
+            console.log(`created ${usernames[i]} with password: ${randomPasswords[i]}`);
+        }
     }
 }
 
