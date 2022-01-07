@@ -641,9 +641,9 @@
           "type": "array",
           "example": "1999"
         },
-        "department": {
+        "remarks": {
           "type": "string",
-          "example": "Sales"
+          "example": "Well done!"
         }
       }
     },

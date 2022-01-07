@@ -5,7 +5,8 @@ const BonusComputationSchema = new mongoose.Schema({
     year: Number,
     value: Number,
     performanceRecords: [{type: mongoose.Types.ObjectId, ref:"PerformanceRecord"}],
-    salesOrders: [{type: mongoose.Types.ObjectId, ref:"SalesOrder"}]
+    salesOrders: [{type: mongoose.Types.ObjectId, ref:"SalesOrder"}],
+    remarks: String
 });
 
 module.exports = mongoose.model('BonusComputation', BonusComputationSchema);

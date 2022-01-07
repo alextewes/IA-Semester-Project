@@ -10,8 +10,8 @@ exports.create = async function(req, res) {
             year: req.body.year,
             value: req.body.value,
             performanceRecords: req.body.performanceRecords,
-            salesOrders: req.body.salesOrders
-
+            salesOrders: req.body.salesOrders,
+            remarks: req.body.remarks
         });
         // save bonusComputation in database
         const data = await bonusComputation.save();
