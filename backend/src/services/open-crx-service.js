@@ -39,7 +39,7 @@ const createSalesOrders = async function() {
                 const year = parseInt(salesorder.createdAt.slice(0, 4));
                 const product = position.productDescription === "Hoover for big companies" ? "HooverGo" : "HooverClean";
                 const customerName = customer.data.fullName;
-                const clientRanking = customer.data.accountRating;
+                const clientRanking = mapClientRanking(customer.data.accountRating);
                 const items = parseInt(position.quantity);
                 const bonus = 0;
                 const query = {
@@ -64,6 +64,10 @@ const createSalesOrders = async function() {
     catch(e) {
         console.log(e);
     }
+}
+
+const mapClientRanking = function(clientRanking) {
+    return clientRanking === 1 ? 'good' : clientRanking === 2 ? 'very good' : 'excellent';
 }
 
 module.exports = {

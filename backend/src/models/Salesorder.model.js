@@ -6,7 +6,7 @@ const SalesorderSchema = new mongoose.Schema({
     year: Number,
     product: String,
     customerName: String,
-    clientRanking: Number,
+    clientRanking: String,
     items: Number,
     bonus: Number
 });
