@@ -41,7 +41,7 @@ const createSalesOrders = async function() {
                 const customerName = customer.data.fullName;
                 const clientRanking = mapClientRanking(customer.data.accountRating);
                 const items = parseInt(position.quantity);
-                const bonus = 0;
+                const bonus = calculateBonus(product, customer.data.accountRating, items);
                 const query = {
                     _id: id,
                     sid: sid,
@@ -70,6 +70,10 @@ const mapClientRanking = function(clientRanking) {
     return clientRanking === 1 ? 'good' : clientRanking === 2 ? 'very good' : 'excellent';
 }
 
+const calculateBonus = function(product ,clientRanking, items) {
+    const productIndicator = product === 'HooverGo' ? 2 : 1;
+    return productIndicator * clientRanking * items * 10;
+}
 module.exports = {
     createSalesOrders
 }
