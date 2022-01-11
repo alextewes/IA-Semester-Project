@@ -32,7 +32,7 @@ export class BonusComputationPageComponent implements OnInit {
   public yOP: number;
   years = 2030;
   salesmenColumnDefs: ColDef[] = [
-    {field: '_id', headerName: 'SID', sortable: true, flex: 1},
+   /* {field: '_id', headerName: 'SID', sortable: true, flex: 1},*/
     {field: 'employeeId', headerName: 'EmployeeId', sortable: true, flex: 1},
     {field: 'firstName', headerName: 'First Name', sortable: true, flex: 1},
     {field: 'lastName', headerName: 'Last Name', sortable: true, flex: 1},
@@ -42,10 +42,10 @@ export class BonusComputationPageComponent implements OnInit {
   salesmenRowData = [];
 
   ordersColumnDefs: ColDef[] = [
-    {field: 'sid', headerName: 'Sid', sortable: true, flex: 1},
-    {field: 'year', headerName: 'Year', sortable: true, flex: 1},
-    {field: 'product', headerName: 'Name of Product', sortable: true, flex: 1},
-    {field: 'customerName', headerName: 'Customer name', sortable: true, flex: 1},
+    /*{field: 'sid', headerName: 'Sid', sortable: true, flex: 1},*/
+    /*{field: 'year', headerName: 'Year', sortable: true, flex: 1},*/
+    {field: 'product', headerName: 'Product', sortable: true, flex: 1},
+    {field: 'customerName', headerName: 'Customer', sortable: true, flex: 1},
     {field: 'clientRanking', headerName: 'Client Ranking', sortable: true, flex: 1},
     {field: 'items', headerName: 'Items', sortable: true, flex: 1},
     {field: 'bonus', headerName: 'Bonus', sortable: true, editable: true, flex: 1},
@@ -58,12 +58,12 @@ export class BonusComputationPageComponent implements OnInit {
   ];
   performanceColumnDefs: ColDef[] = [
     /*{field: 'prid', headerName: 'PrId', sortable: true, flex: 1},*/
+    /*{field: 'sid', headerName: 'Sid', sortable: true, flex: 1},*/
+    {field: 'goalDesc', headerName: 'Goal', sortable: true, editable: true, flex: 1},
     {field: 'actualValue', headerName: 'Actual Value', sortable: true, editable: true, flex: 1},
     {field: 'targetValue', headerName: 'Target Value', sortable: true, editable: true, flex: 1},
-    {field: 'year', headerName: 'Year', sortable: true, editable: true, flex: 1},
-    {field: 'goalDesc', headerName: 'Goal Description', sortable: true, editable: true, flex: 1},
+    /*{field: 'year', headerName: 'Year', sortable: true, flex: 1},*/
     {field: 'bonus', headerName: 'Bonus', sortable: true, editable: true, flex: 1},
-    {field: 'sid', headerName: 'Sid', sortable: true, editable: true, flex: 1}
   ];
   performanceRowData = [];
   performanceRowDataEmpty = [
@@ -98,7 +98,7 @@ export class BonusComputationPageComponent implements OnInit {
       console.log(element.bonus);
     });
     this.bonuses.totalBonusB = 0;
-    this.performanceRowDataEmpty.forEach(x => {
+    this.performanceRowData.forEach(x => {
       this.bonuses.totalBonusB += Number(x.bonus);
     });
     this.bonuses.totalBonusAB = this.bonuses.totalBonusA + this.bonuses.totalBonusB;
@@ -127,13 +127,67 @@ export class BonusComputationPageComponent implements OnInit {
   getSalesOrders(sid: number, year: number): void {
     this.salesOrderService.getSalesOrders(sid, year)
       .subscribe((data: SalesOrder[]) => {
-          this.ordersRowData = data;
+          const augmentedData: SalesOrder[] = data;
+          augmentedData.forEach(d => d.clientRanking = this.clientRankingToString(d.clientRanking));
+          this.ordersRowData = augmentedData;
         },
         (error: HttpErrorResponse) => {
           console.log(error.message);
         });
   }
 
+  clientRankingToString(ranking): string | number {
+    let res: string | number = '';
+    switch (ranking) {
+      case 1:
+        res = 'ok';
+        break;
+      case 2:
+        res = 'good';
+        break;
+      case 3:
+        res = 'very good';
+        break;
+      case 4:
+        res = 'excellent';
+        break;
+      case 'ok':
+        res = 1;
+        break;
+      case 'good':
+        res = 2;
+        break;
+      case 'very good':
+        res = 3;
+        break;
+      case 'excellent':
+        res = 4;
+        break;
+      default:
+        res = 'no valid ranking';
+    }
+    return res;
+  }
+  clientRankingToNumber(ranking: string): number{
+    let res = 0;
+    switch (ranking) {
+      case 'ok':
+        res = 1;
+        break;
+      case 'good':
+        res = 2;
+        break;
+      case 'very good':
+        res = 3;
+        break;
+      case 'excellent':
+        res = 4;
+        break;
+      default:
+        res = 0;
+    }
+    return res;
+  }
   getPerformanceRecordsBySidAndYear(sid: number, year): void {
     this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year)
       .subscribe((data: PerformanceRecord[]) => {
@@ -181,17 +235,37 @@ export class BonusComputationPageComponent implements OnInit {
       Object.entries(selectedRows[0]).forEach(([key, value]) => {
         this.selectedSalesman[key] = value;
       });
-      this.getSalesOrders(this.selectedSalesman._id, this.myControl.value);
-      this.performanceRowData = this.performanceRowDataEmpty;
+      const obS = new Observable<Salesman>();
+      const obSO = this.salesOrderService.getSalesOrders(this.selectedSalesman._id, this.myControl.value);
+      const obP = this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.myControl.value);
+      obSO.subscribe(salesOrders => obP.subscribe(performances => {
+        const augmentedData: SalesOrder[] = salesOrders;
+        augmentedData.forEach(d => d.clientRanking = this.clientRankingToString(d.clientRanking));
+        if (augmentedData.length > 0){
+          this.ordersRowData = augmentedData;
+          if (performances.length !== 0) {
+            this.performanceRowData = performances;
+          } else {
+            this.performanceRowData = this.performanceRowDataEmpty;
+          }
+          this.updateBonus(' ');
+        }
+        else{
+          this.ordersRowData = [];
+          this.performanceRowData = [];
+        }
+      } ), (err) => {}, () => {console.log(this.ordersRowData.length); });
     }
   }
 
   export(): void {
-    const bonusComputation: BonusComputation = {sid: 0, year: 0, value: 0, salesOrders: [], performanceRecords: []};
+    const bonusComputation: BonusComputation = {sid: 0, year: 0, value: 0, salesOrders: [], performanceRecords: [], remarks: '', status: 1};
     bonusComputation.sid = this.selectedSalesman._id;
     bonusComputation.year = parseInt(this.myControl.value, 10);
     bonusComputation.value = this.bonuses.totalBonusAB;
-    this.ordersRowData.forEach((order) => bonusComputation.salesOrders.push(order._id));
+    bonusComputation.remarks = '';
+    bonusComputation.status = 1;
+    this.ordersRowData.forEach((order) => {this.clientRankingToString(order.clientRanking); bonusComputation.salesOrders.push(order._id); });
     Promise.all(this.performanceRowData.map((performance) => {
       performance.sid = this.selectedSalesman._id;
       performance.year = this.myControl.value;
@@ -201,14 +275,18 @@ export class BonusComputationPageComponent implements OnInit {
        performance.sid = this.selectedSalesman._id;
        performance.year = this.myControl.value;
        this.postPerformanceRecord(performance); });*/
-
     this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, parseInt(this.myControl.value, 10))
       .toPromise().then(x => {
-        x.forEach(item => bonusComputation.performanceRecords.push(item._id));
-        this.postBonusComputation(bonusComputation); } );
+      x.forEach(item => bonusComputation.performanceRecords.push(item._id));
+      this.postBonusComputation(bonusComputation);
+    });
 
   }
-
+  dependentSubscription(): void {
+    const obS = this.salesmanService.getSalesmen();
+    const obP = this.performanceRecordService.getPerformanceRecords();
+    obS.subscribe(salesmen => obP.subscribe(performances => salesmen.forEach((salesman, idx) => console.log(salesman.firstName + ':' + performances[idx].goalDesc))));
+  }
   ngOnInit(): void {
     this.getSalesmen();
     this.myControl.setValue('2021');

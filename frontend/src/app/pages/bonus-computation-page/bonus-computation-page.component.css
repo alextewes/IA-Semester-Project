@@ -2,17 +2,42 @@
   text-align:left;
 
 }
+.section-container{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-items:center;
+  grid-gap:0;
+  height:1000px;
+}
+.left-container{
+  display:grid;
+  height:100%;
+  justify-content: center;
+  align-items:center;
+  grid-row-gap: 0;
+}
+.ag-grid-container{
+  height:350px;
+  width:600px;
+}
+.right-container{
+  display:grid;
+  justify-content: center;
+  align-items:center;
+  grid-row-gap: 10px;
+}
 .custom-table > tr > td{
   text-align: center;
 }
 .custom-table-container{
-  border: 1px solid black;
   height:10%;
-  display:flex;
-  align-items: flex-end;
+  display:grid;
+  grid-template-columns: 1fr;
+  /*align-items: flex-end;*/
 }
 .bonus-table{
-  display:flex;
-  flex-direction: row;
+  display:grid;
+  grid-template-rows: 1fr;
   justify-content: right;
 }
