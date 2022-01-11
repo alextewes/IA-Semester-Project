@@ -4,7 +4,7 @@ export interface SalesOrder{
   year: number;
   product: string;
   customerName: string;
-  clientRanking: number;
+  clientRanking: number | string;
   items: number;
   bonus: number;
 }
