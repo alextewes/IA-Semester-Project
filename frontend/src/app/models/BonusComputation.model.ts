@@ -5,4 +5,6 @@ export interface BonusComputation{
   value: number;
   performanceRecords: string[];
   salesOrders: string[];
+  remarks: string;
+  status: number;
 }
