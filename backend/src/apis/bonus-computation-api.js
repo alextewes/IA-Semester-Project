@@ -40,3 +40,23 @@ exports.findBySidAndYear = async function(req, res) {
         return res.status(400).send({message: err.message});
     }
 };
+
+exports.update = async function(req, res) {
+    try {
+        const bonusComputation = await BonusComputation.findByIdAndUpdate(req.params._id, {
+            sid: req.body.sid,
+            year: req.body.year,
+            value: req.body.value,
+            performanceRecords: req.body.performanceRecords,
+            salesOrders: req.body.salesOrders,
+            remarks: req.body.remarks,
+            status: req.body.status
+        }, {new: true});
+        res.send(bonusComputation);
+    }
+    catch (err) {
+        res.status(500).send({
+            message: err
+        });
+    }
+};

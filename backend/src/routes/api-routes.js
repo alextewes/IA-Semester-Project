@@ -33,6 +33,7 @@ router.delete('/performance-record/:_id', performanceRecordApi.delete);
 const bonusComputationApi = require('../apis/bonus-computation-api');
 router.post('/bonus-computation', bonusComputationApi.create);
 router.get('/bonus-computation/:sid/:year', bonusComputationApi.findBySidAndYear);
+router.put('/bonus-computation/:_id', bonusComputationApi.update);
 
 const salesorderApi = require('../apis/salesorder-api');
 router.post('/salesorder', salesorderApi.create);
