@@ -11,10 +11,13 @@ export class BonusComputationService {
   constructor(private httpClient: HttpClient) {
     this.baseUrl = '/api/bonus-computation';
   }
-  public getBonusComputations(sid: number, year: number, ): Observable<BonusComputation[]>{
-    return this.httpClient.get<BonusComputation[]>(this.baseUrl + '/' + sid + '/' + year);
+  public getBonusComputation(sid: number, year: number ): Observable<BonusComputation>{
+    return this.httpClient.get<BonusComputation>(this.baseUrl + '/' + sid + '/' + year);
   }
   public postBonusComputation(bonusComputation: BonusComputation): Observable<BonusComputation>{
     return this.httpClient.post<BonusComputation>(this.baseUrl, bonusComputation);
+  }
+  public putBonusComputation(bid: string, bonusComputation: BonusComputation): Observable<BonusComputation>{
+    return this.httpClient.put<BonusComputation>(this.baseUrl + '/' + bid, bonusComputation);
   }
 }
