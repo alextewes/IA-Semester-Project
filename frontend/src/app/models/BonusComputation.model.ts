@@ -1,5 +1,5 @@
 export interface BonusComputation{
-  _id?: string;
+  _id: string;
   sid: number;
   year: number;
   value: number;
