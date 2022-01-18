@@ -29,6 +29,7 @@ export class SalesmenPageComponent implements OnInit {
           console.log(error.message);
         });
   }
+
   ngOnInit(): void {
     this.getSalesmen();
   }
