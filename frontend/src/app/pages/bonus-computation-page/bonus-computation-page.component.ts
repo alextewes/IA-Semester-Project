@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
-import {forkJoin, from, merge, Observable, of} from 'rxjs';
-import {concatMap, map, mergeMap, startWith} from 'rxjs/operators';
+import {concat, forkJoin, Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import {BonusComputationService} from '../../services/bonus-computation.service';
 import {BonusComputation} from '../../models/BonusComputation.model';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -32,7 +32,7 @@ export class BonusComputationPageComponent implements OnInit {
   public yOP: number;
   years = 2030;
   salesmenColumnDefs: ColDef[] = [
-   /* {field: '_id', headerName: 'SID', sortable: true, flex: 1},*/
+   {field: '_id', headerName: 'SID', sortable: true, flex: 1},
     {field: 'employeeId', headerName: 'EmployeeId', sortable: true, flex: 1},
     {field: 'firstName', headerName: 'First Name', sortable: true, flex: 1},
     {field: 'lastName', headerName: 'Last Name', sortable: true, flex: 1},
@@ -74,7 +74,7 @@ export class BonusComputationPageComponent implements OnInit {
     {goalDesc: 'Communication Skills', targetValue: 0, actualValue: 0, bonus: 0, sid: 0},
     {goalDesc: 'Integrity to Company', targetValue: 0, actualValue: 0, bonus: 0, sid: 0}
   ];
-  myControl = new FormControl();
+  yearControl = new FormControl();
   myControl1 = new FormControl();
   autoCompleteControl = new FormControl();
   filteredAutoCompleteOptions: Observable<string[]>;
@@ -230,8 +230,8 @@ export class BonusComputationPageComponent implements OnInit {
       Object.entries(selectedRows[0]).forEach(([key, value]) => {
         this.selectedSalesman[key] = value;
       });
-      const obSO = this.salesOrderService.getSalesOrdersBySidAndYear(this.selectedSalesman._id, this.myControl.value);
-      const obP = this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.myControl.value);
+      const obSO = this.salesOrderService.getSalesOrdersBySidAndYear(this.selectedSalesman._id, this.yearControl.value);
+      const obP = this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.yearControl.value);
       obSO.subscribe(salesOrders => obP.subscribe(performances => {
         if (salesOrders.length > 0){
           this.ordersRowData = salesOrders;
@@ -251,56 +251,68 @@ export class BonusComputationPageComponent implements OnInit {
   }
 
   export(): void {
-    // check if BonusComputation record exists ? update : post
-    this.bonusComputationService.getBonusComputation(this.selectedSalesman._id, this.myControl.value).subscribe(b => {
-      let bonusComputation: BonusComputation = {sid: 0, year: 0, value: 0, salesOrders: [], performanceRecords: [], remarks: '', status: 1};
-      if (b === undefined) {
-        bonusComputation = {sid: this.selectedSalesman._id, year: parseInt(this.myControl.value, 10),
-          value: this.bonuses.totalBonusAB, salesOrders: [], performanceRecords: [], remarks: '', status: 1};
-        this.ordersRowData.forEach((order) => {
-          bonusComputation.salesOrders.push(order._id);
-        });
-        const newPerformanceRecords: Observable<PerformanceRecord>[] = [];
-        this.performanceRowData.map((performance) => {
-          performance.sid = this.selectedSalesman._id;
-          performance.year = this.myControl.value;
-          newPerformanceRecords.push(this.performanceRecordService.postPeformanceRecord(performance));
-        });
-        forkJoin(newPerformanceRecords).subscribe(_ => {
-          this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, parseInt(this.myControl.value, 10))
-            .subscribe(performanceRecords => {
-              performanceRecords.forEach(performanceRecord => {
-                bonusComputation.performanceRecords.push(performanceRecord._id);
+    this.bonusComputationService.getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
+      .subscribe(b => {
+        let bonusComputation: BonusComputation = {
+          _id: '',
+          sid: 0,
+          year: 0,
+          value: 0,
+          salesOrders: [],
+          performanceRecords: [],
+          remarks: '',
+          status: 1
+        };
+        if (b[0] === undefined) {
+          bonusComputation = {
+            _id: '', sid: this.selectedSalesman._id, year: parseInt(this.yearControl.value, 10),
+            value: this.bonuses.totalBonusAB, salesOrders: [], performanceRecords: [], remarks: '', status: 1
+          };
+          this.ordersRowData.forEach((order) => {
+            bonusComputation.salesOrders.push(order._id);
+          });
+          const newPerformanceRecords: Observable<PerformanceRecord>[] = [];
+          this.performanceRowData.map((performance) => {
+            performance.sid = this.selectedSalesman._id;
+            performance.year = this.yearControl.value;
+            newPerformanceRecords.push(this.performanceRecordService.postPeformanceRecord(performance));
+          });
+          forkJoin(newPerformanceRecords).subscribe(_ => {
+            this.performanceRecordService.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.yearControl.value)
+              .subscribe(performanceRecords => {
+                performanceRecords.forEach(performanceRecord => {
+                  bonusComputation.performanceRecords.push(performanceRecord._id);
+                });
+                this.bonusComputationService.postBonusComputation(bonusComputation).subscribe();
               });
-              this.bonusComputationService.postBonusComputation(bonusComputation);
-            });
-        });
-      } else {
-        /*bonusComputation._id = b[0]._id;
-        bonusComputation.sid = b[0].sid;
-        bonusComputation.year = b[0].year;
-        bonusComputation.salesOrders = b[0].salesOrders;
-        bonusComputation.performanceRecords = b[0].performanceRecords;
-        bonusComputation.status = b[0].status;
-        bonusComputation.remarks = b[0].remarks;
-        bonusComputation.value = b[0].value;*/
-        bonusComputation = b[0];
-        const changedSalesOrders: Observable<SalesOrder>[] = [];
-        this.ordersRowData.forEach((order) => {
-          bonusComputation.salesOrders.push(order._id);
-          changedSalesOrders.push(this.salesOrderService.putSalesOrder(order._id, order));
-        });
-        const changedPerformanceRecords: Observable<PerformanceRecord>[] = [];
-        this.performanceRowData.map(performance => {
-          bonusComputation.performanceRecords.push(performance._id);
-          changedPerformanceRecords
-            .push(this.performanceRecordService.putPerformanceRecord(performance._id, performance));
-        });
-        merge(forkJoin(changedSalesOrders), forkJoin(changedPerformanceRecords)).subscribe(x => {
-          this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation);
-        });
-      }
-    });
+          });
+        } else {
+          bonusComputation._id = b[0]._id;
+          bonusComputation.sid = b[0].sid;
+          bonusComputation.year = b[0].year;
+          bonusComputation.salesOrders = b[0].salesOrders;
+          bonusComputation.performanceRecords = b[0].performanceRecords;
+          bonusComputation.status = b[0].status;
+          bonusComputation.remarks = b[0].remarks;
+          bonusComputation.value = b[0].value;
+
+          const changedSalesOrders: Observable<SalesOrder>[] = [];
+          this.ordersRowData.forEach((order) => {
+            bonusComputation.salesOrders.push(order._id);
+            changedSalesOrders.push(this.salesOrderService.putSalesOrder(order._id, order));
+          });
+          const changedPerformanceRecords: Observable<PerformanceRecord>[] = [];
+          this.performanceRowData.map(performance => {
+            bonusComputation.performanceRecords.push(performance._id);
+            changedPerformanceRecords
+              .push(this.performanceRecordService.putPerformanceRecord(performance._id, performance));
+          });
+          concat(changedSalesOrders, changedPerformanceRecords).subscribe(_ => {
+            this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
+              .subscribe(() => console.log('Updated'));
+          });
+        }
+      });
   }
   dependentSubscription(): void {
     const obS = this.salesmanService.getSalesmen();
@@ -311,7 +323,7 @@ export class BonusComputationPageComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getSalesmen();
-    this.myControl.setValue('2021');
+    this.yearControl.setValue('2021');
     this.salesmenRowData.forEach((element) => {
       this.options.push(element.firstName + '' + element.lastName);
     });
