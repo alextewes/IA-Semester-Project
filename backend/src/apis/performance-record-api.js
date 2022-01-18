@@ -49,7 +49,6 @@ exports.findAll = async function(req, res) {
 exports.update = async function(req, res) {
     try {
         const performanceRecord = await PerformanceRecord.findByIdAndUpdate(req.params._id, {
-            prid: req.body.prid,
             actualValue: req.body.actualValue,
             targetValue: req.body.targetValue,
             year: req.body.year,
