@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ColDef} from 'ag-grid-community';
-import {concat, forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, zip} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {BonusComputationService} from '../../services/bonus-computation.service';
 import {BonusComputation} from '../../models/BonusComputation.model';
@@ -251,6 +251,7 @@ export class BonusComputationPageComponent implements OnInit {
   }
 
   export(): void {
+
     this.bonusComputationService.getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
       .subscribe(b => {
         let bonusComputation: BonusComputation = {
@@ -263,7 +264,31 @@ export class BonusComputationPageComponent implements OnInit {
           remarks: '',
           status: 1
         };
-        if (b[0] === undefined) {
+        if (b[0] !== undefined) {
+          bonusComputation._id = b[0]._id;
+          bonusComputation.sid = b[0].sid;
+          bonusComputation.year = b[0].year;
+          bonusComputation.salesOrders = b[0].salesOrders;
+          bonusComputation.performanceRecords = b[0].performanceRecords;
+          bonusComputation.status = b[0].status;
+          bonusComputation.remarks = b[0].remarks;
+          bonusComputation.value = b[0].value;
+
+          const changedSalesOrders: Observable<SalesOrder>[] = [];
+          this.ordersRowData.forEach((order) => {
+            changedSalesOrders.push(this.salesOrderService.putSalesOrder(order._id, order));
+          });
+          const changedPerformanceRecords: Observable<PerformanceRecord>[] = [];
+          this.performanceRowData.map(performance => {
+            changedPerformanceRecords
+              .push(this.performanceRecordService.putPerformanceRecord(performance._id, performance));
+          });
+          zip(changedSalesOrders, changedPerformanceRecords).subscribe(_ => {
+            this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
+              .subscribe(() => console.log('Updated'));
+          });
+        }
+        else {
           bonusComputation = {
             _id: '', sid: this.selectedSalesman._id, year: parseInt(this.yearControl.value, 10),
             value: this.bonuses.totalBonusAB, salesOrders: [], performanceRecords: [], remarks: '', status: 1
@@ -286,31 +311,6 @@ export class BonusComputationPageComponent implements OnInit {
                 this.bonusComputationService.postBonusComputation(bonusComputation).subscribe();
               });
           });
-        } else {
-          bonusComputation._id = b[0]._id;
-          bonusComputation.sid = b[0].sid;
-          bonusComputation.year = b[0].year;
-          bonusComputation.salesOrders = b[0].salesOrders;
-          bonusComputation.performanceRecords = b[0].performanceRecords;
-          bonusComputation.status = b[0].status;
-          bonusComputation.remarks = b[0].remarks;
-          bonusComputation.value = b[0].value;
-
-          const changedSalesOrders: Observable<SalesOrder>[] = [];
-          this.ordersRowData.forEach((order) => {
-            bonusComputation.salesOrders.push(order._id);
-            changedSalesOrders.push(this.salesOrderService.putSalesOrder(order._id, order));
-          });
-          const changedPerformanceRecords: Observable<PerformanceRecord>[] = [];
-          this.performanceRowData.map(performance => {
-            bonusComputation.performanceRecords.push(performance._id);
-            changedPerformanceRecords
-              .push(this.performanceRecordService.putPerformanceRecord(performance._id, performance));
-          });
-          concat(changedSalesOrders, changedPerformanceRecords).subscribe(_ => {
-            this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
-              .subscribe(() => console.log('Updated'));
-          });
         }
       });
   }
@@ -320,6 +320,31 @@ export class BonusComputationPageComponent implements OnInit {
     obS.subscribe(salesmen => obP.subscribe(
       performances => salesmen.forEach((salesman, idx) => console.log(salesman.firstName + ':'
         + performances[idx].goalDesc))));
+
+    this.bonusComputationService.getBonusComputation(90123, 2019)
+      .subscribe(bc => {
+        if (bc[0] !== undefined){
+          console.log(bc[0]);
+          const prid = bc[0].performanceRecords[0];
+          this.performanceRecordService.getPerformanceRecordsBySidAndYear(bc[0].sid, bc[0].year).subscribe(perfRecords => {
+            perfRecords.forEach(perfRecord => perfRecord.bonus = 0);
+            this.bonusComputationService.putBonusComputation(bc[0]._id, bc[0])
+              .subscribe(() => console.log('Updated'));
+          });
+        }
+        else{
+          this.bonusComputationService.postBonusComputation({
+            _id: '',
+            performanceRecords: [],
+            remarks: '',
+            salesOrders: [],
+            sid: 90123,
+            status: 0,
+            value: 0,
+            year: 2019
+          }).subscribe(_ => console.log('Created new bonus computation'));
+        }
+      });
   }
   ngOnInit(): void {
     this.getSalesmen();
