@@ -20,9 +20,9 @@ import {SalesmenPageComponent} from './pages/salesmen-page/salesmen-page.compone
  */
 const routes: Routes = [
   {path: 'login', component: LoginPageComponent},
-  {path: 'example', component: ExamplePageComponent, canActivate: [AuthGuardService]},
+  /*{path: 'example', component: ExamplePageComponent, canActivate: [AuthGuardService]},
   {path: 'salesmen', component: SalesmenPageComponent, canActivate: [AuthGuardService]},
-  {path: 'performance-records', component: PerformanceRecordsPageComponent, canActivate: [AuthGuardService]},
+  {path: 'performance-records', component: PerformanceRecordsPageComponent, canActivate: [AuthGuardService]},*/
   {path: 'bonus-computations', component: BonusComputationPageComponent, canActivate: [AuthGuardService]},
   {path: '', component: LandingPageComponent, canActivate: [AuthGuardService]},
   {path: '**', component: NotFoundPageComponent} // these entries are matched from top to bottom => not found should be the last entry

@@ -18,9 +18,9 @@ export class MenuBarComponent implements OnInit {
    */
   buttons = [
     {title: 'Welcome', routerLink: ''}, // the tile is the text on the button, the routerLink specifies, where it will navigate
-    {title: 'Example', routerLink: 'example'},
-    {title: 'Salesmen', routerLink: 'salesmen'},
-    {title: 'Performance Records', routerLink: 'performance-records'},
+   /* {title: 'Example', routerLink: 'example'},*/
+   /*{title: 'Salesmen', routerLink: 'salesmen'},*/
+    /*{title: 'Performance Records', routerLink: 'performance-records'},*/
     {title: 'Bonus Computations', routerLink: 'bonus-computations'}
   ];
 
@@ -50,6 +50,7 @@ export class MenuBarComponent implements OnInit {
   fetchUser(): void{
     this.userService.getOwnUser().subscribe(user => {
       this.user = user;
+      console.log(user);
     });
   }
 }
