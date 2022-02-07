@@ -7,7 +7,7 @@
     </div>
     <div class="ag-grid-container">
       <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="ordersRowData"
-                       [columnDefs]="ordersColumnDefs" (cellValueChanged)="updateBonus($event)">
+                       [columnDefs]="ordersColumnDefs" (cellValueChanged)="updateBonus()">
       </ag-grid-angular>
     </div>
 
@@ -17,7 +17,7 @@
     <div class="ag-grid-container" style="width:100%; ">
       <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine"
                        [rowData]="performanceRowData" [columnDefs]="performanceColumnDefs"
-                       (cellValueChanged)="updateBonus($event)">
+                       (cellValueChanged)="updateBonus()">
       </ag-grid-angular>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr; grid-gap:0; align-items:end; justify-items:end ">
@@ -46,19 +46,36 @@
         </tr>
       </table>
     </div>
-
-    <div style="padding:10px">
-      <mat-label>Remarks</mat-label>
-    </div>
-    <div style="width:100%">
-      <mat-form-field style="width:100%" class="example-full-width" appearance="fill">
-        <mat-label>Leave your remarks here</mat-label>
-        <textarea matInput placeholder="Ex. Improve on everything..."></textarea>
-      </mat-form-field>
-    </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; grid-column-gap:0; justify-items:center" >
-      <button style="width:fit-content" mat-button (click)="export()">Export</button>
-      <button style="width:fit-content" mat-button (click)="dependentSubscription()">Dependent</button>
+    <form>
+      <div style="padding:10px">
+        <mat-label>Remarks</mat-label>
+      </div>
+      <div style="width:100%">
+        <mat-form-field  style="width:100%" class="example-full-width" appearance="fill">
+          <mat-label>Leave your remarks here</mat-label>
+          <textarea [formControl]="remarkControl" matInput placeholder="Ex. Improve on everything..."></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+    <div style="display:grid; grid-template-columns:1fr 1fr; grid-column-gap:0; justify-items:center">
+      <ng-container *ngIf="currentUser">
+        <ng-container [ngSwitch]="currentUser.role">
+          <ng-container *ngSwitchCase="0">
+            <button style="width:fit-content" mat-button (click)="export()">Export</button>
+          </ng-container>
+          <ng-container *ngSwitchCase="1">
+            <button style="width:fit-content" mat-button (click)="export()">Export</button>
+          </ng-container>
+          <ng-container *ngSwitchCase="2">
+            <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()" >Accept proposal</button>
+            <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()" >Reject proposal</button>
+          </ng-container>
+          <ng-container *ngSwitchCase="3">
+            <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
+            <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+          </ng-container>
+        </ng-container>
+      </ng-container>
     </div>
   </div>
 
@@ -70,7 +87,7 @@
           <td>{{selectedSalesman.firstName}} {{selectedSalesman.lastName}}</td>
         </tr>
         <tr>
-          <th>Employeed ID:</th>
+          <th>Employee ID:</th>
           <td>{{selectedSalesman.employeeId}}</td>
         </tr>
         <tr>
@@ -101,8 +118,8 @@
         </mat-form-field>
         <mat-form-field style="width:fit-content" appearance="fill">
           <mat-label>Year of performance</mat-label>
-          <input matInput type="number" placeholder="2021" [formControl]="yearControl" min="1950">
-          <mat-error *ngIf="years < 1950">1950</mat-error>
+          <input matInput type="number" placeholder="2021" (change)="onYearChange($event)" [formControl]="yearControl" min="1950">
+          <mat-error *ngIf="yearControl.value < 1950">1950</mat-error>
         </mat-form-field>
       </form>
     </div>
