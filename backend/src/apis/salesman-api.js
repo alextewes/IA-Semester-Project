@@ -25,7 +25,7 @@ exports.create = async function(req, res) {
 
 exports.findById = async function(req, res) {
     try {
-        const salesman = await Salesman.findById(req.params.id);
+        const salesman = await Salesman.findById(req.params.sid);
         if(!salesman) {
             return res.status(404).send({message: "Salesman not found!"});
         }
@@ -48,7 +48,7 @@ exports.findAll = async function(req, res) {
 
 exports.update = async function(req, res) {
     try {
-        const salesman = await Salesman.findByIdAndUpdate(req.params.id, {
+        const salesman = await Salesman.findByIdAndUpdate(req.params.sid, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             dob: req.body.dob,
@@ -65,10 +65,10 @@ exports.update = async function(req, res) {
 
 exports.delete = async function(req, res) {
     try {
-        const salesman = await Salesman.findByIdAndDelete(req.params.id);
+        const salesman = await Salesman.findByIdAndDelete(req.params.sid);
         if(!salesman) {
             return res.status(404).send({
-                message: "Salesman not found with ID: " + req.params.id
+                message: "Salesman not found with ID: " + req.params.sid
             });
         }
         res.send({message: "Salesman deleted!"});
