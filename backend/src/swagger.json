@@ -351,6 +351,36 @@
         }
       }
     },
+    "/bonus-computation/:_id": {
+      "put": {
+        "tags": [
+          "Bonus Computation"
+        ],
+        "summary": "Update one Bonus Computation by Id",
+        "operationId": "update",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Bonus Computation object that needs to be updated",
+            "schema": {
+              "$ref": "#/definitions/bonus-computation"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful"
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
     "/salesorder": {
       "post": {
         "tags": [
