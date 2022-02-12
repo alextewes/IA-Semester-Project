@@ -14,6 +14,7 @@ import {PerformanceRecordService} from '../../services/performance-record.servic
 import {PerformanceRecord} from '../../models/PerformanceRecord.model';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/User';
+
 import {performanceRowDataEmpty, salesmenColumnDefs } from './GridDefinitions';
 @Component({
   selector: 'app-bonus-computation-page',
@@ -26,7 +27,7 @@ export class BonusComputationPageComponent implements OnInit {
 
   @Input() public currentUser: User = {} as User;
   @Input() selectedSalesman: Salesman = {} as Salesman;
-  private currentBonusComputation: BonusComputation;
+  public currentBonusComputation: BonusComputation;
 
   constructor(private bonusComputationService: BonusComputationService,
               private salesmanService: SalesmanService,
@@ -147,14 +148,17 @@ export class BonusComputationPageComponent implements OnInit {
   }
 
   getCurrentBonusComputation(): void{
-    this.bonusComputationService.getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
+    this.bonusComputationService
+      .getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
       .subscribe(bonusComputation => {
         this.currentBonusComputation = bonusComputation[0];
         if (this.currentBonusComputation === undefined){
           this.remarkControl.setValue('');
         }
-        this.remarkControl.setValue(this.currentBonusComputation.remarks);
-        console.log(this.currentBonusComputation);
+        else{
+          this.remarkControl.setValue(this.currentBonusComputation.remarks);
+          console.log(this.currentBonusComputation);
+        }
       });
   }
   onSelectionChanged(event): void {
@@ -185,9 +189,17 @@ export class BonusComputationPageComponent implements OnInit {
   }
 
   setOrdersAndPerformances(): void {
-    this.getSalesOrders().subscribe(salesOrders => this.getPerformanceRecords().subscribe(performances => {
+    this.getSalesOrders()
+      .subscribe(salesOrders => this.getPerformanceRecords().subscribe(performances => {
       if (salesOrders.length > 0) {
+        this.ordersColumnDefs.forEach((col) => {
+          col.editable = false;
+        });
         this.ordersRowData = salesOrders;
+
+        this.performanceColumnDefs.forEach((col) => {
+          col.editable = false;
+        });
         if (performances.length !== 0) {
           this.performanceRowData = performances;
         } else {
@@ -205,8 +217,10 @@ export class BonusComputationPageComponent implements OnInit {
   acceptBonusComputationProposal(): void {
     if (this.currentUser.role === 2){
       this.currentBonusComputation.status = 2;
-      this.bonusComputationService.putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation).subscribe(_ => {
-        console.log('The Bonus Computation proposal was successfully accepted!');
+      this.bonusComputationService
+        .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
+        .subscribe(_ => {
+          console.log('The Bonus Computation proposal was successfully accepted!');
       });
     } else {
       console.log('The current user`s role is not known ');
@@ -216,7 +230,9 @@ export class BonusComputationPageComponent implements OnInit {
   rejectBonusComputationProposal(): void {
     if (this.currentUser.role === 2){
         this.currentBonusComputation.status = 0;
-        this.bonusComputationService.putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation).subscribe(_ => {
+        this.bonusComputationService
+          .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
+          .subscribe(_ => {
           console.log('The Bonus Computation proposal was successfully reject!');
         });
       } else {
@@ -226,7 +242,9 @@ export class BonusComputationPageComponent implements OnInit {
   acceptBonusComputation(): void {
     if (this.currentUser.role === 3) {
       this.currentBonusComputation.status = 3;
-      this.bonusComputationService.putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation).subscribe(_ => {
+      this.bonusComputationService
+        .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
+        .subscribe(_ => {
         console.log('Bonus Computation was successfully accepted!');
       });
     } else {
@@ -237,7 +255,9 @@ export class BonusComputationPageComponent implements OnInit {
   rejectBonusComputation(): void {
     if (this.currentUser.role === 3) {
       this.currentBonusComputation.status = 1;
-      this.bonusComputationService.putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation).subscribe(_ => {
+      this.bonusComputationService
+        .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
+        .subscribe(_ => {
         console.log('Bonus Computation was successfully rejected!');
       });
     } else {
@@ -388,5 +408,4 @@ export class BonusComputationPageComponent implements OnInit {
     return node.data.firstName.toLowerCase().includes(filterValue.toLowerCase());
   }
 }
-
 let filterValue = '';
