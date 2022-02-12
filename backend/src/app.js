@@ -97,5 +97,5 @@ async function initStandardUsers(db){
     }
 }
 
-orangeHrmService.getAllEmployees().then(r => console.log("Salesmen updated!")).catch(err => console.log(err));
+orangeHrmService.createSalesmen().then(r => console.log("Salesmen updated!")).catch(err => console.log(err));
 openCrxService.createSalesOrders().then(r => console.log("Salesorders updated!")).catch(err => console.log(err));

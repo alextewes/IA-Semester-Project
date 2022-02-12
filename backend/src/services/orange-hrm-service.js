@@ -28,7 +28,7 @@ const getOrangeHrmToken = async function() {
     return accessToken;
 }
 
-const getAllEmployees = async function() {
+const createSalesmen = async function() {
     try {
         const token = await getOrangeHrmToken();
         let config = {
@@ -47,7 +47,14 @@ const getAllEmployees = async function() {
                 const lastName = e.lastName;
                 const dob = e.dob;
                 const department = e.unit;
-                const query = {_id: sid, employeeId: employeeId, firstName: firstName,lastName :lastName, dob: dob, department:department};
+                const query = {
+                    _id: sid,
+                    employeeId: employeeId,
+                    firstName: firstName,
+                    lastName :lastName,
+                    dob: dob,
+                    department:department
+                };
                 if(await Salesman.exists({_id: sid})) {
                     await Salesman.findByIdAndUpdate(sid);
                 }
@@ -55,7 +62,6 @@ const getAllEmployees = async function() {
                     await new Salesman(query).save();
                 }
             }
-
         }
     }
     catch(e) {
@@ -88,6 +94,6 @@ const postBonusComputation = async function(id, year, value) {
 
 module.exports = {
     getOrangeHrmToken,
-    getAllEmployees,
+    createSalesmen,
     postBonusComputation
 };
