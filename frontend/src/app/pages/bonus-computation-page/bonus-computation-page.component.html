@@ -2,7 +2,7 @@
 
 <section class="section-container">
   <div class="left-container">
-    <div style="display:grid; align-items:start; padding:10px">
+    <div class="heading-container">
       <h2>Orders of the salesman</h2>
     </div>
     <div class="ag-grid-container">
@@ -11,7 +11,7 @@
       </ag-grid-angular>
     </div>
 
-    <div style="display:grid; align-items:start; padding:10px">
+    <div class="heading-container">
       <h2>Performance records of the salesman</h2>
     </div>
     <div class="ag-grid-container" style="width:100%; ">
@@ -20,7 +20,7 @@
                        (cellValueChanged)="updateBonus()">
       </ag-grid-angular>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; grid-gap:0; align-items:end; justify-items:end ">
+    <div class="bonus-container">
       <table>
         <tr>
           <th>Total Orders Bonus:</th>
@@ -28,7 +28,7 @@
         </tr>
       </table>
     </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; grid-gap:0; justify-items:end ">
+    <div class="bonus-container">
       <table>
         <tr>
           <th>Total Social performance Bonus:</th>
@@ -38,7 +38,7 @@
     </div>
 
     <!--Total bonus A + B -->
-    <div style="display:grid; grid-template-columns: 1fr 1fr; grid-gap:0; justify-items:end ">
+    <div class="bonus-container">
       <table>
         <tr>
           <th>Total Bonus:</th>
@@ -57,30 +57,67 @@
         </mat-form-field>
       </div>
     </form>
-    <div style="display:grid; grid-template-columns:1fr 1fr; grid-column-gap:0; justify-items:center">
+    <div class="export-container">
       <ng-container *ngIf="currentUser">
         <ng-container [ngSwitch]="currentUser.role">
           <ng-container *ngSwitchCase="0">
             <button style="width:fit-content" mat-button (click)="export()">Export</button>
           </ng-container>
           <ng-container *ngSwitchCase="1">
-            <button style="width:fit-content" mat-button (click)="export()">Export</button>
+            <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
+              <ng-container *ngIf="currentBonusComputation.status === 0">
+                <button style="width:fit-content" mat-button (click)="export()">Export</button>
+              </ng-container>
+              <ng-container *ngIf="currentBonusComputation.status === 1">
+                <p>The bonus computation is being reviewed by the hr</p>
+              </ng-container>
+              <ng-container *ngIf="currentBonusComputation.status === 2; else acceptedBySalesman_CEO">
+                <p>The bonus computation is being reviewed by the Salesman</p>
+              </ng-container>
+              <ng-template #acceptedBySalesman_CEO>
+                <p>The bonus computation was already accepted by the salesman</p>
+              </ng-template>
+            </ng-container>
+            <ng-template #noBonusComputation>
+              <p>There is no bonus computation </p>
+            </ng-template>
           </ng-container>
           <ng-container *ngSwitchCase="2">
-            <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()" >Accept proposal</button>
-            <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()" >Reject proposal</button>
+            <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
+              <ng-container *ngIf="currentBonusComputation.status === 1;">
+                <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()" >Accept proposal</button>
+                <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()" >Reject proposal</button>
+              </ng-container>
+              <ng-container *ngIf=" currentBonusComputation.status === 0">
+                <p>The bonusComputation is being reviewed by the ceo</p>
+              </ng-container>
+              <ng-container *ngIf="currentBonusComputation.status === 3">
+                <p>The bonus computation was already accepted by the salesman</p>
+              </ng-container>
+            </ng-container>
+            <ng-template #noBonusComputation>
+              <p>There is no bonus computation</p>
+            </ng-template>
           </ng-container>
           <ng-container *ngSwitchCase="3">
-            <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
-            <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+            <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
+              <p>The current status of the bonus computation is {{currentBonusComputation.status}}</p>
+              <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
+              <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+            </ng-container>
+            <ng-template #noBonusComputation>
+              <p>There is no bonus computation</p>
+            </ng-template>
+            <!-- Maybe set a limit of changes to the bonus computation status-->
           </ng-container>
         </ng-container>
+
       </ng-container>
     </div>
   </div>
 
   <div class="right-container">
-    <div style="display:grid; justify-content:center;align-items:center">
+    <div class="selected-salesman-container">
       <table [ngClass]="'custom-table'" *ngIf="selectedSalesman">
         <tr>
           <th>Name:</th>
@@ -100,8 +137,8 @@
         </tr>
       </table>
     </div>
-    <div style="display:grid; grid-template-columns: 1fr; align-items:center; justify-content:center">
-      <form style="display:grid; grid-template-columns:1fr 1fr; justify-items:center">
+    <div class="salesman-selection-container">
+      <form>
         <mat-form-field style="width:fit-content" appearance="fill">
           <mat-label>Salesman</mat-label>
           <input type="text" matInput [formControl]="autoCompleteControl" [matAutocomplete]="auto"
@@ -133,15 +170,3 @@
     </div>
   </div>
 </section>
-<!-- on side lying triangle layout-->
-<!--
-<div style="display:grid; grid-template-columns: 1fr 1fr; justify-items: center; align-items:center">
-  <div style="display: grid; grid-template-columns: 1fr; justify-items: center; align-items: center; grid-row-gap:500px;">
-    <div>1</div>
-    <div>2</div>
-  </div>
-  <div style="display: grid">
-    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid consequatur corporis dolorem dolorum eaque enim, est illo itaque laudantium minus porro quae quis, quo recusandae rem rerum saepe unde voluptate.</div>
-  </div>
-</div>
--->
