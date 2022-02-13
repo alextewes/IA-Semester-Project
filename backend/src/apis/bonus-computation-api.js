@@ -1,6 +1,7 @@
 const BonusComputation = require('../models/BonusComputation.model');
 const Salesman = require('../models/Salesman.model');
 const orangeHrmService = require('../services/orange-hrm-service');
+const kafkaService = require('../services/kafka-service');
 
 exports.create = async function(req, res) {
     try {
@@ -19,6 +20,7 @@ exports.create = async function(req, res) {
         // post bonusComputation to OrangeHRM
         const employeeId = await Salesman.findById(req.body.sid, 'employeeId');
         await orangeHrmService.postBonusComputation(employeeId.employeeId, req.body.year, req.body.value);
+        await kafkaService.runProducer(kafkaService.createLogFromBonusComputation(bonusComputation._id, 'created'));
         res.send(data);
     }
     catch (err){
@@ -34,6 +36,9 @@ exports.findBySidAndYear = async function(req, res) {
         if(!bonusComputation) {
             return res.status(404).send({message: "Bonus Computation not found!"});
         }
+        await kafkaService.runProducer(kafkaService.createLogFromBonusComputation(bonusComputation[0]._id, 'retrieved'));
+        console.log(bonusComputation);
+        console.log(typeof bonusComputation);
         res.send(bonusComputation);
     }
     catch(err) {
@@ -52,6 +57,7 @@ exports.update = async function(req, res) {
             remarks: req.body.remarks,
             status: req.body.status
         }, {new: true});
+        await kafkaService.runProducer(kafkaService.createLogFromBonusComputation(bonusComputation._id, 'updated'));
         res.send(bonusComputation);
     }
     catch (err) {
