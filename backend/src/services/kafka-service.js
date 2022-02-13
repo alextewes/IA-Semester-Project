@@ -30,10 +30,14 @@ const runConsumer = async () => {
 
     await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
+            let timestamp = message.timestamp;
+            timestamp = (timestamp - (timestamp % 1000)) / 1000; // remove last 3 digits of number
+            const date = new Date(timestamp * 1000);
             console.log({
                 partition,
                 offset: message.offset,
                 value: message.value.toString(),
+                UTCtimestamp: date
             })
         },
     })
