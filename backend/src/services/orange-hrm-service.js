@@ -3,6 +3,7 @@ const qs = require('querystring');
 const FormData = require('form-data');
 const Salesman = require('../models/Salesman.model')
 const baseUrl = 'https://sepp-hrm.inf.h-brs.de/symfony/web/index.php';
+const kafkaService = require("../services/kafka-service");
 
 let accessToken = null;
 const body = qs.stringify({
@@ -38,6 +39,7 @@ const createSalesmen = async function() {
             }
         };
         const accounts = await axios.get('https://sepp-hrm.inf.h-brs.de/symfony/web/index.php/api/v1/employee/search', config);
+        await kafkaService.runProducer("Connection to OrangeHRM established.");
         const unfilteredAccounts = accounts.data.data;
         for(let e of unfilteredAccounts) {
             if(e.unit === "Sales") {

@@ -1,6 +1,7 @@
 const axios = require('axios');
-const Salesorder = require("../models/Salesorder.model")
+const Salesorder = require("../models/Salesorder.model");
 const mongoose = require("mongoose");
+const kafkaService = require("../services/kafka-service");
 
 const baseUrl = 'https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX';
 const credentials = {
@@ -18,6 +19,7 @@ const config = {
 async function fetchSalesOrders() {
     try {
         const sales = await axios.get(`${baseUrl}/org.opencrx.kernel.contract1/provider/CRX/segment/Standard/salesOrder`, config)
+        await kafkaService.runProducer("Connection to OpenCRX established.");
         return sales.data.objects;
     }
     catch(e) {
