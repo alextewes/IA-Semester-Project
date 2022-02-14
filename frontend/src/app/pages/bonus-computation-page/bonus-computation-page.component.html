@@ -17,7 +17,7 @@
     <div class="ag-grid-container" style="width:100%; ">
       <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine"
                        [rowData]="performanceRowData" [columnDefs]="performanceColumnDefs"
-                       (cellValueChanged)="updateBonus()">
+                       (cellValueChanged)="updateBonus()" (gridReady)="onPerformanceGridReady($event)">
       </ag-grid-angular>
     </div>
     <div class="bonus-container">
@@ -51,7 +51,7 @@
         <mat-label>Remarks</mat-label>
       </div>
       <div style="width:100%">
-        <mat-form-field  style="width:100%" class="example-full-width" appearance="fill">
+        <mat-form-field style="width:100%" class="example-full-width" appearance="fill">
           <mat-label>Leave your remarks here</mat-label>
           <textarea [formControl]="remarkControl" matInput placeholder="Ex. Improve on everything..."></textarea>
         </mat-form-field>
@@ -62,37 +62,70 @@
         <ng-container [ngSwitch]="currentUser.role">
           <ng-container *ngSwitchCase="0">
             <button style="width:fit-content" mat-button (click)="export()">Export</button>
-          </ng-container>
-          <ng-container *ngSwitchCase="1">
+
             <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
-              <ng-container *ngIf="currentBonusComputation.status === 0">
-                <button style="width:fit-content" mat-button (click)="export()">Export</button>
+              <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()">Accept
+                proposal
+              </button>
+              <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()">Reject
+                proposal
+              </button>
+              <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
+              <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+              <ng-container [ngSwitch]="currentBonusComputation.status">
+                <ng-container *ngSwitchCase="1">
+                  <p>The bonus computation is being reviewed by the hr</p>
+                </ng-container>
+                <ng-container *ngSwitchCase="2">
+                  <p>The bonus computation is being reviewed by the Salesman</p>
+                </ng-container>
+                <ng-container *ngSwitchCase="3">
+                  <p>The bonus computation was already accepted by the salesman</p>
+                </ng-container>
               </ng-container>
-              <ng-container *ngIf="currentBonusComputation.status === 1">
-                <p>The bonus computation is being reviewed by the hr</p>
-              </ng-container>
-              <ng-container *ngIf="currentBonusComputation.status === 2; else acceptedBySalesman_CEO">
-                <p>The bonus computation is being reviewed by the Salesman</p>
-              </ng-container>
-              <ng-template #acceptedBySalesman_CEO>
-                <p>The bonus computation was already accepted by the salesman</p>
-              </ng-template>
             </ng-container>
             <ng-template #noBonusComputation>
-              <p>There is no bonus computation </p>
+              <p>There is no bonus computation</p>
             </ng-template>
           </ng-container>
+            <ng-container *ngSwitchCase="1">
+              <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
+                <ng-container [ngSwitch]="currentBonusComputation.status">
+                  <ng-container *ngSwitchCase="1">
+                    <p>The bonus computation is being reviewed by the hr</p>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="2">
+                    <p>The bonus computation is being reviewed by the Salesman</p>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="3">
+                    <p>The bonus computation was already accepted by the salesman</p>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <ng-template #noBonusComputation>
+                <button style="width:fit-content" mat-button (click)="export()">Export</button>
+              </ng-template>
+            </ng-container>
           <ng-container *ngSwitchCase="2">
             <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
-              <ng-container *ngIf="currentBonusComputation.status === 1;">
-                <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()" >Accept proposal</button>
-                <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()" >Reject proposal</button>
-              </ng-container>
-              <ng-container *ngIf=" currentBonusComputation.status === 0">
-                <p>The bonusComputation is being reviewed by the ceo</p>
-              </ng-container>
-              <ng-container *ngIf="currentBonusComputation.status === 3">
-                <p>The bonus computation was already accepted by the salesman</p>
+              <ng-container [ngSwitch]="currentBonusComputation.status">
+                <ng-container *ngSwitchCase="1">
+                  <button style="width:fit-content" mat-button (click)="acceptBonusComputationProposal()">Accept
+                    proposal
+                  </button>
+                  <button style="width:fit-content" mat-button (click)="rejectBonusComputationProposal()">Reject
+                    proposal
+                  </button>
+                </ng-container>
+                <ng-container *ngSwitchCase="0">
+                  <p>The bonusComputation is being reviewed by the ceo</p>
+                </ng-container>
+                <ng-container *ngSwitchCase="2">
+                  <p>The bonus computation is being reviewed by the Salesman</p>
+                </ng-container>
+                <ng-container *ngSwitchCase="3">
+                  <p>The bonus computation was already accepted by the salesman</p>
+                </ng-container>
               </ng-container>
             </ng-container>
             <ng-template #noBonusComputation>
@@ -101,17 +134,15 @@
           </ng-container>
           <ng-container *ngSwitchCase="3">
             <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
-              <p>The current status of the bonus computation is {{currentBonusComputation.status}}</p>
               <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
               <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
             </ng-container>
             <ng-template #noBonusComputation>
               <p>There is no bonus computation</p>
             </ng-template>
-            <!-- Maybe set a limit of changes to the bonus computation status-->
+            <!-- Maybe set a limit of changes to the bonus computation status -->
           </ng-container>
         </ng-container>
-
       </ng-container>
     </div>
   </div>
@@ -148,14 +179,16 @@
           </button>
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option *ngFor="let option of filteredAutoCompleteOptions | async" [value]="option"
-                        (onSelectionChange)="onSelFunc(option)">
+                        (onSelectionChange)="onAutocompleteSelectionChanged(option)">
               {{option}}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
         <mat-form-field style="width:fit-content" appearance="fill">
           <mat-label>Year of performance</mat-label>
-          <input matInput type="number" placeholder="2021" (change)="onYearChange($event)" [formControl]="yearControl" min="1950">
+          <input matInput type="number" placeholder="2021" (change)="onYearInputChanged($event)"
+                 [formControl]="yearControl"
+                 min="1950">
           <mat-error *ngIf="yearControl.value < 1950">1950</mat-error>
         </mat-form-field>
       </form>
@@ -163,7 +196,7 @@
     <div class="ag-grid-container">
       <ag-grid-angular style="width: 100%; height:100%;" class="ag-theme-alpine" [rowData]="salesmenRowData "
                        [columnDefs]="salesmenColumnDefs" [rowSelection]="rowSelection"
-                       (selectionChanged)="onSelectionChanged($event)" (gridReady)="onGridReady($event)"
+                       (selectionChanged)="onSelectionChanged($event)" (gridReady)="onSalesmanGridReady($event)"
                        [isExternalFilterPresent]="isExternalFilterPresent"
                        [doesExternalFilterPass]="doesExternalFilterPass">
       </ag-grid-angular>

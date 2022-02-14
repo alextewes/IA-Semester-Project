@@ -15,7 +15,8 @@ import {PerformanceRecord} from '../../models/PerformanceRecord.model';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/User';
 
-import {performanceRowDataEmpty, salesmenColumnDefs } from './GridDefinitions';
+import {performanceRowDataEmpty, salesmenColumnDefs, performanceColumnDefs, ordersColumnDefs} from './GridDefinitions';
+
 @Component({
   selector: 'app-bonus-computation-page',
   templateUrl: './bonus-computation-page.component.html',
@@ -24,10 +25,11 @@ import {performanceRowDataEmpty, salesmenColumnDefs } from './GridDefinitions';
 export class BonusComputationPageComponent implements OnInit {
   public bonusComputations: BonusComputation[];
   public rowSelection = 'single';
-
+  remarkControl = new FormControl();
   @Input() public currentUser: User = {} as User;
   @Input() selectedSalesman: Salesman = {} as Salesman;
   public currentBonusComputation: BonusComputation;
+  private performanceGridApi: any;
 
   constructor(private bonusComputationService: BonusComputationService,
               private salesmanService: SalesmanService,
@@ -38,59 +40,13 @@ export class BonusComputationPageComponent implements OnInit {
 
   salesmenColumnDefs: ColDef[] = salesmenColumnDefs;
   salesmenRowData = [];
-
-  ordersColumnDefs: ColDef[] = [
-    {field: 'product', headerName: 'Product', sortable: true, flex: 1},
-    {field: 'customerName', headerName: 'Customer', sortable: true, autoHeight: true, wrapText: true, flex: 1},
-    {field: 'clientRanking', headerName: 'Client Ranking', sortable: true, flex: 1},
-    {field: 'items', headerName: 'Items', sortable: true, flex: 1},
-    {
-      field: 'bonus',
-      headerName: 'Bonus',
-      sortable: true,
-      editable: this.currentUser.role === 3 || this.currentUser.role === 2 ? false : true,
-      flex: 1
-    },
-  ];
+  ordersColumnDefs: ColDef[] = ordersColumnDefs;
   /*{productName: 'HooverClean ', client: 'Germania GmbH', clientRanking: 'good', items: 10, bonus: 200},*/
-  ordersRowData = [
-  ];
-  performanceColumnDefs: ColDef[] = [
-    {
-      field: 'goalDesc',
-      headerName: 'Goal',
-      sortable: true,
-      editable: this.currentUser.role === 3 || this.currentUser.role === 2 ? false : true,
-      autoHeight: true,
-      wrapText: true,
-      flex: 1
-    },
-    {
-      field: 'actualValue',
-      headerName: 'Actual Value',
-      sortable: true,
-      editable: this.currentUser.role === 3 || this.currentUser.role === 2 ? false : true,
-      flex: 1
-    },
-    {
-      field: 'targetValue',
-      headerName: 'Target Value',
-      sortable: true,
-      editable: this.currentUser.role === 3 || this.currentUser.role === 2 ? false : true,
-      flex: 1
-    },
-    {
-      field: 'bonus',
-      headerName: 'Bonus',
-      sortable: true,
-      editable: this.currentUser.role === 3 || this.currentUser.role === 2 ? false : true,
-      flex: 1
-    },
-  ];
+  ordersRowData = [];
+  performanceColumnDefs: ColDef[] = performanceColumnDefs;
   performanceRowData = [];
   performanceRowDataEmpty = performanceRowDataEmpty;
   yearControl = new FormControl();
-  myControl1 = new FormControl();
   autoCompleteControl = new FormControl();
   filteredAutoCompleteOptions: Observable<string[]>;
   salesmenGridApi;
@@ -101,9 +57,49 @@ export class BonusComputationPageComponent implements OnInit {
     totalBonusA: 0,
     totalBonusB: 0
   };
-  remarkControl = new FormControl();
+
+  calculateBonus(): void {
+    this.performanceRowData.forEach((performance) => {
+      if (performance.actualValue !== 0 && performance.targetValue !== 0) {
+        const targetActualRatio = performance.actualValue / performance.targetValue;
+        if (targetActualRatio <= 0) {
+          performance.bonus = 0;
+        } else {
+          performance.bonus = Number(targetActualRatio.toFixed(2)) * this.goalDescriptionToValue(performance.goalDesc);
+        }
+      } else {
+        performance.bonus = 0;
+      }
+    });
+    const itemsToUpdate: any[] = [];
+    this.performanceGridApi.forEachNodeAfterFilterAndSort((rowNode) => {
+      const data = rowNode.data;
+      itemsToUpdate.push(data);
+    });
+    this.performanceGridApi.applyTransaction({update: itemsToUpdate});
+  }
+
+  goalDescriptionToValue(description: string): number {
+    switch (description) {
+      case 'Leadership Competence':
+        return 300;
+      case 'Openness to Employee':
+        return 100;
+      case 'Social Behaviour to Employee':
+        return 200;
+      case 'Attitude towards Client':
+        return 300;
+      case 'Communication Skills':
+        return 300;
+      case 'Integrity to Company':
+        return 200;
+      default:
+        return 100;
+    }
+  }
 
   updateBonus(): void {
+    this.calculateBonus();
     this.bonuses.totalBonusA = 0;
     this.ordersRowData.forEach(element => {
       this.bonuses.totalBonusA += parseInt(element.bonus, 0);
@@ -147,20 +143,20 @@ export class BonusComputationPageComponent implements OnInit {
     return this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year);
   }
 
-  getCurrentBonusComputation(): void{
+  getCurrentBonusComputation(): void {
     this.bonusComputationService
       .getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
       .subscribe(bonusComputation => {
         this.currentBonusComputation = bonusComputation[0];
-        if (this.currentBonusComputation === undefined){
-          this.remarkControl.setValue('');
-        }
-        else{
-          this.remarkControl.setValue(this.currentBonusComputation.remarks);
-          console.log(this.currentBonusComputation);
-        }
+        this.remarkControl.setValue(this.currentBonusComputation.remarks);
+        console.log(this.currentBonusComputation);
+      }, (_) => {
+        this.remarkControl.setValue('');
+        this.performanceRowData = this.performanceRowDataEmpty;
+        this.currentBonusComputation = undefined;
       });
   }
+
   onSelectionChanged(event): void {
     const selectedRows = event.api.getSelectedRows();
     if (selectedRows.length === 1) {
@@ -174,8 +170,15 @@ export class BonusComputationPageComponent implements OnInit {
     }
   }
 
-  onYearChange(event: any): void {
-    this.setOrdersAndPerformances();
+  onYearInputChanged(event: any): void {
+    const selectedRows = this.salesmenGridApi.getSelectedRows();
+    if (selectedRows.length === 1) {
+      Object.entries(selectedRows[0]).forEach(([key, value]) => {
+        this.selectedSalesman[key] = value;
+      });
+      this.setOrdersAndPerformances();
+      this.getCurrentBonusComputation();
+    }
   }
 
   getSalesOrders(): Observable<SalesOrder[]> {
@@ -191,62 +194,48 @@ export class BonusComputationPageComponent implements OnInit {
   setOrdersAndPerformances(): void {
     this.getSalesOrders()
       .subscribe(salesOrders => this.getPerformanceRecords().subscribe(performances => {
-      if (salesOrders.length > 0) {
-        this.ordersColumnDefs.forEach((col) => {
-          col.editable = false;
-        });
-        this.ordersRowData = salesOrders;
-
-        this.performanceColumnDefs.forEach((col) => {
-          col.editable = false;
-        });
-        if (performances.length !== 0) {
-          this.performanceRowData = performances;
+        if (salesOrders.length > 0) {
+          this.ordersRowData = salesOrders;
+          if (performances.length !== 0) {
+            this.performanceRowData = performances;
+          } else {
+            this.performanceRowData = this.performanceRowDataEmpty;
+          }
+          this.updateBonus();
         } else {
-          this.performanceRowData = this.performanceRowDataEmpty;
+          this.ordersRowData = [];
+          this.performanceRowData = [];
         }
-        this.updateBonus();
-      } else {
-        this.ordersRowData = [];
-        this.performanceRowData = [];
-      }
-    }), (err) => {
-    });
+      }), (err) => {
+      });
   }
 
   acceptBonusComputationProposal(): void {
-    if (this.currentUser.role === 2){
+    if (this.currentUser.role === 2) {
       this.currentBonusComputation.status = 2;
-      this.bonusComputationService
-        .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
-        .subscribe(_ => {
-          console.log('The Bonus Computation proposal was successfully accepted!');
-      });
+      this.updateExistingBonusComputation(this.currentBonusComputation);
     } else {
       console.log('The current user`s role is not known ');
     }
-    }
+  }
 
   rejectBonusComputationProposal(): void {
-    if (this.currentUser.role === 2){
-        this.currentBonusComputation.status = 0;
-        this.bonusComputationService
-          .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
-          .subscribe(_ => {
-          console.log('The Bonus Computation proposal was successfully reject!');
-        });
-      } else {
-        console.log('The current user`s role is not known ');
-      }
+    if (this.currentUser.role === 2) {
+      this.currentBonusComputation.status = 0;
+      this.updateExistingBonusComputation(this.currentBonusComputation);
+    } else {
+      console.log('The current user`s role is not known ');
+    }
   }
+
   acceptBonusComputation(): void {
     if (this.currentUser.role === 3) {
       this.currentBonusComputation.status = 3;
       this.bonusComputationService
         .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
         .subscribe(_ => {
-        console.log('Bonus Computation was successfully accepted!');
-      });
+          console.log('Bonus Computation was successfully accepted!');
+        });
     } else {
       console.log('The current user`s role is not known ');
     }
@@ -258,8 +247,8 @@ export class BonusComputationPageComponent implements OnInit {
       this.bonusComputationService
         .putBonusComputation(this.currentBonusComputation._id, this.currentBonusComputation)
         .subscribe(_ => {
-        console.log('Bonus Computation was successfully rejected!');
-      });
+          console.log('Bonus Computation was successfully rejected!');
+        });
     } else {
       console.log('The current user`s role is not known ');
     }
@@ -282,36 +271,42 @@ export class BonusComputationPageComponent implements OnInit {
   }
 
   export(): void {
+    let bonusComputation: BonusComputation = {} as BonusComputation;
     this.bonusComputationService.getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
       .subscribe(b => {
-        let bonusComputation: BonusComputation = {} as BonusComputation;
-        if (b[0] !== undefined) {
           bonusComputation = {
             _id: b[0]._id, sid: b[0].sid, year: b[0].year,
             value: b[0].value, salesOrders: b[0].salesOrders, performanceRecords: b[0].performanceRecords,
             remarks: this.remarkControl.value, status: 1
           };
           this.updateExistingBonusComputation(bonusComputation);
-        } else {
-          bonusComputation = {
-            _id: '', sid: this.selectedSalesman._id, year: parseInt(this.yearControl.value, 10),
-            value: this.bonuses.totalBonusAB, salesOrders: [], performanceRecords: [], remarks: this.remarkControl.value, status: 1
-          };
-          this.ordersRowData.forEach((order) => {
-            bonusComputation.salesOrders.push(order._id);
-          });
-          const newPerformanceRecords: Observable<PerformanceRecord>[] = this.createNewPerformanceRecords();
-          forkJoin(newPerformanceRecords).subscribe(_ => {
-            this.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.yearControl.value)
-              .subscribe(performanceRecords => {
-                performanceRecords.forEach(performanceRecord => {
-                  bonusComputation.performanceRecords.push(performanceRecord._id);
-                });
-                this.bonusComputationService.postBonusComputation(bonusComputation).subscribe();
+      }, (error) => {
+        bonusComputation = {
+          _id: '',
+          sid: this.selectedSalesman._id,
+          year: parseInt(this.yearControl.value, 10),
+          value: this.bonuses.totalBonusAB,
+          salesOrders: [],
+          performanceRecords: [],
+          remarks: this.remarkControl.value,
+          status: 1
+        };
+        this.ordersRowData.forEach((order) => {
+          bonusComputation.salesOrders.push(order._id);
+        });
+        const newPerformanceRecords: Observable<PerformanceRecord>[] = this.createNewPerformanceRecords();
+        forkJoin(newPerformanceRecords).subscribe(_ => {
+          this.getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.yearControl.value)
+            .subscribe(performanceRecords => {
+              performanceRecords.forEach(performanceRecord => {
+                bonusComputation.performanceRecords.push(performanceRecord._id);
               });
-          });
-        }
+              this.bonusComputationService.postBonusComputation(bonusComputation).subscribe();
+            });
+        });
+      }, () => {
       });
+
   }
 
   createNewPerformanceRecords(): Observable<PerformanceRecord>[] {
@@ -353,8 +348,7 @@ export class BonusComputationPageComponent implements OnInit {
     if (this.currentUser.role === 0 || this.currentUser.role === 1 || this.currentUser.role === 2) {
       this.getSalesmen();
       this.setSalesmanAutoComplete();
-    }
-      else if (this.currentUser.role === 3) {
+    } else if (this.currentUser.role === 3) {
       // Salesman view only populate with "own" data
       this.getSalesman('90123');
       this.setSalesmanAutoComplete();
@@ -365,11 +359,8 @@ export class BonusComputationPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentUser();
-    // the year stepper is set to the current year
     this.yearControl.setValue(`${new Date().getFullYear()}`);
-    // check what role the currently logged in user has
   }
-
 
   private _filter(value: string): string[] {
     const fValue = value.toLowerCase();
@@ -379,12 +370,15 @@ export class BonusComputationPageComponent implements OnInit {
     return filteredSalesmen.map(salesman => salesman.firstName);
   }
 
-  onGridReady(params): void {
-    this.salesmenGridApi = params.api;
+  onSalesmanGridReady(params): void {
     this.salesmenGridApi = params.api;
   }
 
-  onSelFunc(option): void {
+  onPerformanceGridReady(params): void {
+    this.performanceGridApi = params.api;
+  }
+
+  onAutocompleteSelectionChanged(option): void {
     filterValue = option;
     this.salesmenGridApi.onFilterChanged();
   }

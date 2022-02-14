@@ -15,3 +15,49 @@ export const salesmenColumnDefs = [
   {field: 'dob', headerName: 'Date of Birth', sortable: true, flex: 1},
   {field: 'department', headerName: 'Department', sortable: true, flex: 1},
 ];
+
+export const performanceColumnDefs = [
+  {
+    field: 'goalDesc',
+    headerName: 'Goal',
+    sortable: true,
+    editable: false,
+    autoHeight: true,
+    wrapText: true,
+    flex: 1
+  },
+  {
+    field: 'actualValue',
+    headerName: 'Actual Value',
+    sortable: true,
+    editable: true,
+    flex: 1
+  },
+  {
+    field: 'targetValue',
+    headerName: 'Target Value',
+    sortable: true,
+    editable: true,
+    flex: 1
+  },
+  {
+    field: 'bonus',
+    headerName: 'Bonus',
+    sortable: true,
+    editable: false,
+    flex: 1
+  },
+];
+export const ordersColumnDefs = [
+  {field: 'product', headerName: 'Product', sortable: true, flex: 1},
+  {field: 'customerName', headerName: 'Customer', sortable: true, autoHeight: true, wrapText: true, flex: 1},
+  {field: 'clientRanking', headerName: 'Client Ranking', sortable: true, flex: 1},
+  {field: 'items', headerName: 'Items', sortable: true, flex: 1},
+  {
+    field: 'bonus',
+    headerName: 'Bonus',
+    sortable: true,
+    editable: false,
+    flex: 1
+  },
+];
