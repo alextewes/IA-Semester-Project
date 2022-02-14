@@ -264,6 +264,7 @@ export class BonusComputationPageComponent implements OnInit {
       changedPerformanceRecords
         .push(this.putPerformanceRecord(performance._id, performance));
     });
+    bonusComputation.remarks = this.remarkControl.value;
     zip(forkJoin(changedSalesOrders), forkJoin(changedPerformanceRecords)).subscribe(_ => {
       this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
         .subscribe(() => console.log('Updated'));
