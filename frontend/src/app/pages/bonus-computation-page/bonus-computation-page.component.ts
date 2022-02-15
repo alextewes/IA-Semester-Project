@@ -273,9 +273,11 @@ export class BonusComputationPageComponent implements OnInit {
       changedPerformanceRecords
         .push(this.putPerformanceRecord(performance._id, performance));
     });
-    if ( this.currentUser.role  < 2){
+    if (this.currentUser.role  < 2){
       bonusComputation.remarks = this.remarkControl.value;
     }
+    bonusComputation.value = this.bonuses.totalBonusAB;
+    this.updateBonus();
     zip(forkJoin(changedSalesOrders), forkJoin(changedPerformanceRecords)).subscribe(_ => {
       this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
         .subscribe(() => console.log('Updated'));
