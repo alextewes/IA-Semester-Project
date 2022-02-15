@@ -166,6 +166,7 @@ export class BonusComputationPageComponent implements OnInit {
                 .getPerformanceRecordsBySidAndYear(this.currentBonusComputation.sid, this.currentBonusComputation.year)
                 .subscribe(performancerecords => {
                   this.performanceRowData = performancerecords;
+                  this.updateBonus();
                 }, () => {
                   this.performanceRowData = [];
                 });
@@ -182,18 +183,22 @@ export class BonusComputationPageComponent implements OnInit {
                     this.performanceRowData = performances;
                   } else {
                     this.performanceRowData = JSON.parse(JSON.stringify(performanceRowDataEmpty));
+                    this.updateBonus();
                   }
                 }, () => {
                   this.performanceRowData = JSON.parse(JSON.stringify(performanceRowDataEmpty));
+                  this.updateBonus();
                 });
               }
               else{
                 this.ordersRowData = [];
                 this.performanceRowData = [];
+                this.updateBonus();
               }
             }, () => {
               this.ordersRowData = [];
               this.performanceRowData = [];
+              this.updateBonus();
             }, () => {
               this.updateBonus();
             });
