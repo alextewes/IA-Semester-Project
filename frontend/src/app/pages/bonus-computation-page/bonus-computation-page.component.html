@@ -74,10 +74,10 @@
               <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
               <ng-container [ngSwitch]="currentBonusComputation.status">
                 <ng-container *ngSwitchCase="1">
-                  <p>The bonus computation is being reviewed by the hr</p>
+                  <p>The bonus computation is being reviewed by the HR department</p>
                 </ng-container>
                 <ng-container *ngSwitchCase="2">
-                  <p>The bonus computation is being reviewed by the Salesman</p>
+                  <p>The bonus computation is being reviewed by the salesman</p>
                 </ng-container>
                 <ng-container *ngSwitchCase="3">
                   <p>The bonus computation was already accepted by the salesman</p>
@@ -91,11 +91,14 @@
             <ng-container *ngSwitchCase="1">
               <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
                 <ng-container [ngSwitch]="currentBonusComputation.status">
+                  <ng-container *ngSwitchCase="0">
+                    <button style="width:fit-content" mat-button (click)="export()">Export</button>
+                  </ng-container>
                   <ng-container *ngSwitchCase="1">
-                    <p>The bonus computation is being reviewed by the hr</p>
+                    <p>The bonus computation is being reviewed by the HR department</p>
                   </ng-container>
                   <ng-container *ngSwitchCase="2">
-                    <p>The bonus computation is being reviewed by the Salesman</p>
+                    <p>The bonus computation is being reviewed by the salesman</p>
                   </ng-container>
                   <ng-container *ngSwitchCase="3">
                     <p>The bonus computation was already accepted by the salesman</p>
@@ -118,10 +121,10 @@
                   </button>
                 </ng-container>
                 <ng-container *ngSwitchCase="0">
-                  <p>The bonusComputation is being reviewed by the ceo</p>
+                  <p>The bonus computation is being reviewed by the CEO</p>
                 </ng-container>
                 <ng-container *ngSwitchCase="2">
-                  <p>The bonus computation is being reviewed by the Salesman</p>
+                  <p>The bonus computation is being reviewed by the salesman</p>
                 </ng-container>
                 <ng-container *ngSwitchCase="3">
                   <p>The bonus computation was already accepted by the salesman</p>
