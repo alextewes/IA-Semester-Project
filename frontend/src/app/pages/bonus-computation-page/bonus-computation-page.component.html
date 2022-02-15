@@ -134,13 +134,19 @@
           </ng-container>
           <ng-container *ngSwitchCase="3">
             <ng-container *ngIf="currentBonusComputation; else noBonusComputation">
-              <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
-              <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+              <ng-container [ngSwitch]="currentBonusComputation.status">
+                <ng-container *ngSwitchCase="2">
+                  <button style="width:fit-content" mat-button (click)="acceptBonusComputation()">Accept Bonus</button>
+                  <button style="width:fit-content" mat-button (click)="rejectBonusComputation()">Reject Bonus</button>
+                </ng-container>
+                <ng-container *ngSwitchCase="3">
+                  <p>The bonus computation was already accepted</p>
+                </ng-container>
+              </ng-container>
             </ng-container>
             <ng-template #noBonusComputation>
               <p>There is no bonus computation</p>
             </ng-template>
-            <!-- Maybe set a limit of changes to the bonus computation status -->
           </ng-container>
         </ng-container>
       </ng-container>
@@ -198,7 +204,7 @@
                        [columnDefs]="salesmenColumnDefs" [rowSelection]="rowSelection"
                        (selectionChanged)="onSelectionChanged($event)" (gridReady)="onSalesmanGridReady($event)"
                        [isExternalFilterPresent]="isExternalFilterPresent"
-                       [doesExternalFilterPass]="doesExternalFilterPass">
+                       [doesExternalFilterPass]="doesExternalFilterPass" (cellClicked)="updateBonus()">
       </ag-grid-angular>
     </div>
   </div>
