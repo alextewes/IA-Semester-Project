@@ -37,8 +37,6 @@ exports.findBySidAndYear = async function(req, res) {
             return res.status(404).send({message: "Bonus Computation not found!"});
         }
         await kafkaService.runProducer(kafkaService.createLogFromBonusComputation(bonusComputation[0]._id, 'retrieved'));
-        console.log(bonusComputation);
-        console.log(typeof bonusComputation);
         res.send(bonusComputation);
     }
     catch(err) {
