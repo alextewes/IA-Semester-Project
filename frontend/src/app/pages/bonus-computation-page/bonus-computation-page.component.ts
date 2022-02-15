@@ -16,6 +16,7 @@ import {UserService} from '../../services/user.service';
 import {User} from '../../models/User';
 
 import {performanceRowDataEmpty, salesmenColumnDefs, performanceColumnDefs, ordersColumnDefs} from './GridDefinitions';
+let filterValue = '';
 
 @Component({
   selector: 'app-bonus-computation-page',
@@ -41,11 +42,9 @@ export class BonusComputationPageComponent implements OnInit {
   salesmenColumnDefs: ColDef[] = salesmenColumnDefs;
   salesmenRowData = [];
   ordersColumnDefs: ColDef[] = ordersColumnDefs;
-  /*{productName: 'HooverClean ', client: 'Germania GmbH', clientRanking: 'good', items: 10, bonus: 200},*/
   ordersRowData = [];
   performanceColumnDefs: ColDef[] = performanceColumnDefs;
   performanceRowData = [];
-  performanceRowDataEmpty = performanceRowDataEmpty;
   yearControl = new FormControl();
   autoCompleteControl = new FormControl();
   filteredAutoCompleteOptions: Observable<string[]>;
@@ -143,42 +142,66 @@ export class BonusComputationPageComponent implements OnInit {
     return this.performanceRecordService.getPerformanceRecordsBySidAndYear(sid, year);
   }
 
-  getCurrentBonusComputation(): void {
-    this.bonusComputationService
-      .getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
-      .subscribe(bonusComputation => {
-        this.currentBonusComputation = bonusComputation[0];
-        this.remarkControl.setValue(this.currentBonusComputation.remarks);
-        console.log(this.currentBonusComputation);
-      }, (_) => {
-        this.remarkControl.setValue('');
-        this.performanceRowData = this.performanceRowDataEmpty;
-        this.currentBonusComputation = undefined;
-      });
-  }
-
   onSelectionChanged(event): void {
-    const selectedRows = event.api.getSelectedRows();
-    if (selectedRows.length === 1) {
-      Object.entries(selectedRows[0]).forEach(([key, value]) => {
-        this.selectedSalesman[key] = value;
-      });
-      this.getCurrentBonusComputation();
-      this.setOrdersAndPerformances();
-    } else {
-      console.log('There was nothing to be selected!');
-    }
+    this.handleSelectionOrYearInputChange();
   }
 
-  onYearInputChanged(event: any): void {
+  handleSelectionOrYearInputChange(): void{
+    this.currentBonusComputation = undefined;
+    this.remarkControl.setValue('');
     const selectedRows = this.salesmenGridApi.getSelectedRows();
     if (selectedRows.length === 1) {
       Object.entries(selectedRows[0]).forEach(([key, value]) => {
         this.selectedSalesman[key] = value;
       });
-      this.setOrdersAndPerformances();
-      this.getCurrentBonusComputation();
+      this.bonusComputationService
+        .getBonusComputation(this.selectedSalesman._id, this.yearControl.value)
+        .subscribe(bonusComputation => {
+          this.currentBonusComputation = bonusComputation[0];
+          this.remarkControl.setValue(this.currentBonusComputation.remarks);
+          this.salesOrderService.getSalesOrdersBySidAndYear(this.currentBonusComputation.sid, this.currentBonusComputation.year)
+            .subscribe(salesorders => {
+              this.ordersRowData = salesorders;
+              this.performanceRecordService
+                .getPerformanceRecordsBySidAndYear(this.currentBonusComputation.sid, this.currentBonusComputation.year)
+                .subscribe(performancerecords => {
+                  this.performanceRowData = performancerecords;
+                }, () => {
+                  this.performanceRowData = [];
+                });
+            }, () => {
+              this.ordersRowData = [];
+            });
+        }, (_) => {
+          this.getSalesOrders()
+            .subscribe(salesOrders => {
+              if (salesOrders.length > 0) {
+                this.ordersRowData = salesOrders;
+                this.getPerformanceRecords().subscribe(performances => {
+                  if (performances.length !== 0) {
+                    this.performanceRowData = performances;
+                  } else {
+                    this.performanceRowData = JSON.parse(JSON.stringify(performanceRowDataEmpty));
+                  }
+                }, () => {
+                  this.performanceRowData = JSON.parse(JSON.stringify(performanceRowDataEmpty));
+                });
+              }
+              else{
+                this.ordersRowData = [];
+                this.performanceRowData = [];
+              }
+            }, () => {
+              this.ordersRowData = [];
+              this.performanceRowData = [];
+            }, () => {
+              this.updateBonus();
+            });
+        });
     }
+  }
+  onYearInputChanged(event: any): void {
+    this.handleSelectionOrYearInputChange();
   }
 
   getSalesOrders(): Observable<SalesOrder[]> {
@@ -189,25 +212,6 @@ export class BonusComputationPageComponent implements OnInit {
   getPerformanceRecords(): Observable<PerformanceRecord[]> {
     return this.performanceRecordService
       .getPerformanceRecordsBySidAndYear(this.selectedSalesman._id, this.yearControl.value);
-  }
-
-  setOrdersAndPerformances(): void {
-    this.getSalesOrders()
-      .subscribe(salesOrders => this.getPerformanceRecords().subscribe(performances => {
-        if (salesOrders.length > 0) {
-          this.ordersRowData = salesOrders;
-          if (performances.length !== 0) {
-            this.performanceRowData = performances;
-          } else {
-            this.performanceRowData = this.performanceRowDataEmpty;
-          }
-          this.updateBonus();
-        } else {
-          this.ordersRowData = [];
-          this.performanceRowData = [];
-        }
-      }), (err) => {
-      });
   }
 
   acceptBonusComputationProposal(): void {
@@ -264,7 +268,9 @@ export class BonusComputationPageComponent implements OnInit {
       changedPerformanceRecords
         .push(this.putPerformanceRecord(performance._id, performance));
     });
-    bonusComputation.remarks = this.remarkControl.value;
+    if ( this.currentUser.role  < 2){
+      bonusComputation.remarks = this.remarkControl.value;
+    }
     zip(forkJoin(changedSalesOrders), forkJoin(changedPerformanceRecords)).subscribe(_ => {
       this.bonusComputationService.putBonusComputation(bonusComputation._id, bonusComputation)
         .subscribe(() => console.log('Updated'));
@@ -281,7 +287,7 @@ export class BonusComputationPageComponent implements OnInit {
             remarks: this.remarkControl.value, status: 1
           };
           this.updateExistingBonusComputation(bonusComputation);
-      }, (error) => {
+      }, () => {
         bonusComputation = {
           _id: '',
           sid: this.selectedSalesman._id,
@@ -303,6 +309,7 @@ export class BonusComputationPageComponent implements OnInit {
                 bonusComputation.performanceRecords.push(performanceRecord._id);
               });
               this.bonusComputationService.postBonusComputation(bonusComputation).subscribe();
+              this.currentBonusComputation = bonusComputation;
             });
         });
       }, () => {
@@ -323,7 +330,6 @@ export class BonusComputationPageComponent implements OnInit {
   getCurrentUser(): void {
     this.userService.getOwnUser().subscribe(user => {
       this.currentUser = user;
-      console.log(this.currentUser);
       this.setSalesmanTable();
     });
   }
@@ -403,4 +409,4 @@ export class BonusComputationPageComponent implements OnInit {
     return node.data.firstName.toLowerCase().includes(filterValue.toLowerCase());
   }
 }
-let filterValue = '';
+
